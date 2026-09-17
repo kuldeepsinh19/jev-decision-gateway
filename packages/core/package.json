@@ -1,0 +1,19 @@
+{
+  "name": "@jev-decision-gateway/core",
+  "version": "0.0.1",
+  "description": "Core decision engine for jev-decision-gateway: Jev adapter boundary, policy, fallback, and trace.",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "^0.6.0"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0"
+  }
+}

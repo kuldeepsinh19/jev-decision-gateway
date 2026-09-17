@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist"
   },
+  "files": [],
   "references": [
     { "path": "./packages/core" },
     { "path": "./packages/providers" },
