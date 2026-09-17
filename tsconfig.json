@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist"
+  },
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/providers" },
+    { "path": "./packages/cli" },
+    { "path": "./examples/agent-runtime-optimizer" },
+    { "path": "./benchmark/ai-agent-scenario" }
+  ]
+}
