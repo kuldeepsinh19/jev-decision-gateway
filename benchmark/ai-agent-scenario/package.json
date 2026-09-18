@@ -1,0 +1,23 @@
+{
+  "name": "@jev-decision-gateway/benchmark-ai-agent",
+  "version": "0.0.1",
+  "description": "Benchmark scenario: naive per-decision LLM calls (baseline) vs. jev-decision-gateway-gated control decisions (jevGated) for a synthetic AI agent workload.",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "start": "tsx src/run.ts"
+  },
+  "dependencies": {
+    "@jev-decision-gateway/core": "0.0.1",
+    "@jev-decision-gateway/providers": "0.0.1",
+    "@jev-decision-gateway/example-agent-runtime-optimizer": "0.0.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "vitest": "^1.0.0"
+  }
+}

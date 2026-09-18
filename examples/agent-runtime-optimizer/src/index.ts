@@ -4,6 +4,12 @@ import { MockProvider } from "@jev-decision-gateway/providers";
 import { runLoop, type TieredProviders } from "./loop.js";
 import { formatTranscript } from "./print.js";
 
+// Re-exported so `benchmark/ai-agent-scenario` (Task 8) can depend on this package as a workspace
+// dependency and import `runLoop` directly, rather than re-implementing the agent loop a second
+// time -- per the plan's explicit instruction not to duplicate loop logic between the example and
+// the benchmark.
+export { runLoop, type TieredProviders, type RunLoopOptions, type RunLoopResult } from "./loop.js";
+
 export const DEFAULT_TASK =
   "Inspect recent logs for an error, and report a one-line summary of what you found.";
 
