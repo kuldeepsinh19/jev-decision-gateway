@@ -1,52 +1,23 @@
 import { choice, noul, score } from "@typesafe-ai/sdk";
 import type { ChoiceCriteria, EntryType } from "@typesafe-ai/sdk";
 
+import type { DecisionDef } from "../policy/rules.js";
+
 // ---------------------------------------------------------------------------------------------
-// Minimal local `DecisionDef` shapes for THIS task.
-//
-// The plan's Task 3 (`packages/core/src/policy/rules.ts`) owns the canonical version of these
-// types; this local copy uses EXACTLY the same field names (per the Task 2 brief) so Task 3 can
-// re-export/align to it without renaming anything here.
+// `DecisionDef` shapes now live canonically in `policy/rules.ts` (Task 3). This module originally
+// defined a local copy (byte-identical field names, per the Task 2 brief) with a note that Task 3
+// would own the canonical version going forward; that move has happened, so this module now
+// imports them and re-exports them unchanged, so existing imports of `ChoiceDecisionDef` /
+// `ScoreDecisionDef` / `NoulDecisionDef` / `DecisionDef` from "./builders.js" (including this
+// file's own tests) keep working without modification.
 // ---------------------------------------------------------------------------------------------
 
-export interface ChoiceDecisionDef<
-  TOptions extends Record<string, string> = Record<string, string>,
-> {
-  kind: "choice";
-  id: string;
-  instructions?: string;
-  options: TOptions;
-  policy: { minConfidence: number; fallbackAction: keyof TOptions & string };
-}
-
-export interface ScoreDecisionDef {
-  kind: "score";
-  id: string;
-  instructions?: string;
-  levels: string[];
-  policy: {
-    minConfidence: number;
-    thresholds: Array<{ atOrAbove: number; action: string }>;
-    fallbackAction: string;
-  };
-}
-
-export interface NoulDecisionDef {
-  kind: "noul";
-  id: string;
-  instructions?: string;
-  trueDescription?: string;
-  falseDescription?: string;
-  policy: {
-    minConfidence: number;
-    trueAction: string;
-    falseAction: string;
-    fallbackAction: string;
-  };
-}
-
-export type DecisionDef =
-  ChoiceDecisionDef | ScoreDecisionDef | NoulDecisionDef;
+export type {
+  ChoiceDecisionDef,
+  DecisionDef,
+  NoulDecisionDef,
+  ScoreDecisionDef,
+} from "../policy/rules.js";
 
 /**
  * Maps a `DecisionDef` to the real SDK's question-builder output (`ChoiceQuestion` /
