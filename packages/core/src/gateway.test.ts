@@ -203,6 +203,49 @@ describe("DecisionGateway.evaluate", () => {
     });
     expect(result.usage).toBeNull();
   });
+
+  it("handles partial-batch malformed response: missing id resolves to MALFORMED_RESPONSE fallback while others succeed (Global Constraint 3)", async () => {
+    // Mock askJev to return a successful response for 2 decisions, but omit one decision id's
+    // answer entirely (simulating a malformed/invalid answer that was filtered by jev/adapter.ts).
+    // This tests that the missing id gets fallback treatment while the other id succeeds normally
+    // in the same evaluate() call.
+    askJevMock.mockResolvedValue({
+      answers: {
+        route: {
+          type: "choice",
+          choice: "search",
+          confidence: 0.9,
+          probabilities: { search: 0.9, finish: 0.1 },
+        },
+        // Note: "quality" is intentionally omitted here, simulating MALFORMED_RESPONSE
+      },
+      usage: { inputTokens: 10, outputTokens: 3 },
+    });
+
+    const gateway = new DecisionGateway({ apiKey: "test-key" });
+    const result = await gateway.evaluate({
+      state: { text: "hello" },
+      decisions: { route: choiceDef, quality: scoreDef },
+    });
+
+    // askJev should still have been called exactly once (no retry)
+    expect(askJevMock).toHaveBeenCalledTimes(1);
+
+    // Decision with a valid answer succeeds normally
+    expect(result.decisions.route).toMatchObject({
+      action: "search",
+      usedFallback: false,
+    });
+
+    // Decision with missing answer falls back with MALFORMED_RESPONSE reason
+    expect(result.decisions.quality).toMatchObject({
+      usedFallback: true,
+      fallbackReason: "MALFORMED_RESPONSE",
+    });
+
+    // Usage reflects the successful batch (one call)
+    expect(result.usage).toEqual({ inputTokens: 10, outputTokens: 3 });
+  });
 });
 
 describe("DecisionGateway.chain", () => {
