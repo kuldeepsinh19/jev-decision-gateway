@@ -68,14 +68,14 @@ export function createTrace(
   };
 }
 
-// Case-insensitive: catches `apiKey`, `TOKEN`, `userSecret`, `TYPESAFE_API_KEY`, etc.
-const SECRET_KEY_PATTERN = /key|token|secret/i;
+// Case-insensitive: catches `apiKey`, `TOKEN`, `userSecret`, `TYPESAFE_API_KEY`, `password`, `credential`, etc.
+const SECRET_KEY_PATTERN = /key|token|secret|password|credential|pwd/i;
 
 /**
- * Returns a shallow copy of `state` with any key matching `/key|token|secret/i` replaced with
- * `"[REDACTED]"`. Used defensively wherever `state` (or a fragment of it) might be logged or
- * embedded in a trace — per Global Constraint 4, no secrets in logs/traces/error messages, ever.
- * Does not mutate the input.
+ * Returns a shallow copy of `state` with any key matching `/key|token|secret|password|credential|pwd/i`
+ * replaced with `"[REDACTED]"`. Used defensively wherever `state` (or a fragment of it) might be
+ * logged or embedded in a trace — per Global Constraint 4, no secrets in logs/traces/error messages,
+ * ever. Does not mutate the input.
  */
 export function redactState(
   state: Record<string, unknown>

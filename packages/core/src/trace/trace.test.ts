@@ -162,12 +162,17 @@ describe("createTrace", () => {
 describe("redactState", () => {
   const SECRET = "sk-super-secret-fake-value-should-never-leak-9f3c1a";
 
-  it("redacts keys matching /key|token|secret/i case-insensitively", () => {
+  it("redacts keys matching /key|token|secret|password|credential|pwd/i case-insensitively", () => {
     const state = {
       apiKey: SECRET,
       TOKEN: SECRET,
       userSecret: SECRET,
       TYPESAFE_API_KEY: SECRET,
+      password: SECRET,
+      userPassword: SECRET,
+      pwd: SECRET,
+      credential: SECRET,
+      apiCredential: SECRET,
       username: "not-a-secret",
       count: 3,
     };
@@ -178,6 +183,11 @@ describe("redactState", () => {
     expect(result.TOKEN).toBe("[REDACTED]");
     expect(result.userSecret).toBe("[REDACTED]");
     expect(result.TYPESAFE_API_KEY).toBe("[REDACTED]");
+    expect(result.password).toBe("[REDACTED]");
+    expect(result.userPassword).toBe("[REDACTED]");
+    expect(result.pwd).toBe("[REDACTED]");
+    expect(result.credential).toBe("[REDACTED]");
+    expect(result.apiCredential).toBe("[REDACTED]");
     expect(result.username).toBe("not-a-secret");
     expect(result.count).toBe(3);
   });
@@ -195,6 +205,27 @@ describe("redactState", () => {
     const result = redactState(state);
     const serialized = JSON.stringify(result);
 
+    expect(serialized).not.toContain(SECRET);
+  });
+
+  it("redacts password-style keys and never lets the literal secret value survive in serialized output", () => {
+    // Tests password, pwd, and credential patterns to ensure coverage per Global Constraint 4
+    const state = {
+      password: SECRET,
+      myPassword: SECRET,
+      pwd: SECRET,
+      credential: SECRET,
+      apiCredential: SECRET,
+    };
+
+    const result = redactState(state);
+    const serialized = JSON.stringify(result);
+
+    expect(result.password).toBe("[REDACTED]");
+    expect(result.myPassword).toBe("[REDACTED]");
+    expect(result.pwd).toBe("[REDACTED]");
+    expect(result.credential).toBe("[REDACTED]");
+    expect(result.apiCredential).toBe("[REDACTED]");
     expect(serialized).not.toContain(SECRET);
   });
 
