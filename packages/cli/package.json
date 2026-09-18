@@ -1,0 +1,24 @@
+{
+  "name": "@jev-decision-gateway/cli",
+  "version": "0.0.1",
+  "description": "Thin CLI wrapper over the jev-decision-gateway flagship example and benchmark -- pure wiring, no business logic.",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "jev-gateway": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "@jev-decision-gateway/example-agent-runtime-optimizer": "0.0.1",
+    "@jev-decision-gateway/benchmark-ai-agent": "0.0.1"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0"
+  }
+}

@@ -169,10 +169,9 @@ export async function runLoop(
     jevTotalLatencyMs: chainResult.totalLatencyMs,
   };
 
-  async function generate(
-    tier: SimulatedTier,
-    forced: boolean
-  ): Promise<LLMResponse> {
+  // `forced`-ness is tracked by each call site when it builds an `IterationLog` entry, not by
+  // this helper itself -- it always does the same thing regardless of why it was called.
+  async function generate(tier: SimulatedTier): Promise<LLMResponse> {
     const response = await providers[tier].complete({
       system:
         "You are the final-answer generator for a demo agent loop. Answer the task concisely using the research gathered so far.",
@@ -229,7 +228,7 @@ export async function runLoop(
     // chosen -- in the latter case we skip calling that tool this iteration and go straight to
     // generation, treating "stop" as an independent, higher-priority safety signal.
     const tier = result.decisions.modelTier.action as SimulatedTier;
-    const response = await generate(tier, false);
+    const response = await generate(tier);
     log.generation = { tier, response };
 
     const verifyAction = result.decisions.verifyOutput.action;
@@ -256,7 +255,7 @@ export async function runLoop(
   // (per Global Constraint 5's fail-open spirit) rather than silently returning with no answer.
   if (!state.done) {
     const forcedTier: SimulatedTier = "mock-fast";
-    const response = await generate(forcedTier, true);
+    const response = await generate(forcedTier);
     state.done = true;
     state.scratchpad += `\n[forced finalize] maxIterations (${state.maxIterations}) reached without a natural finish; generated a best-effort answer with the "${forcedTier}" tier (hard cap, not overridable by Jev).`;
     iterationLogs.push({
