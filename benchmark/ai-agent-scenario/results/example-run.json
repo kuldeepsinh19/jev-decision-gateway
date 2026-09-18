@@ -1,0 +1,544 @@
+{
+  "header": {
+    "generatedAt": "2026-09-18T20:26:31.211Z",
+    "sdkVersion": "0.6.0",
+    "nodeVersion": "v20.20.2",
+    "gitCommit": "d59a577032472229f49a8a40d41fa18da616fbc3"
+  },
+  "comparison": {
+    "baseline": {
+      "scenario": "baseline",
+      "taskCount": 12,
+      "controlDecisionCount": 120,
+      "completedCount": 12,
+      "real": {
+        "measurement": "real",
+        "callCount": 0,
+        "decisionCount": 0,
+        "totalLatencyMs": 0,
+        "avgConfidence": null,
+        "fallbackCount": 0,
+        "fallbackRate": 0
+      },
+      "simulated": {
+        "measurement": "simulated",
+        "callCount": 132,
+        "callsAvoided": 0,
+        "totalLatencyMs": 184800,
+        "totalCostUsd": 0.06028499999999999
+      }
+    },
+    "jevGated": {
+      "scenario": "jevGated",
+      "taskCount": 12,
+      "controlDecisionCount": 120,
+      "completedCount": 12,
+      "real": {
+        "measurement": "real",
+        "callCount": 75,
+        "decisionCount": 228,
+        "totalLatencyMs": 31660.552699999997,
+        "avgConfidence": 0.8173249299719888,
+        "fallbackCount": 73,
+        "fallbackRate": 0.3201754385964912
+      },
+      "simulated": {
+        "measurement": "simulated",
+        "callCount": 36,
+        "callsAvoided": 120,
+        "totalLatencyMs": 24750,
+        "totalCostUsd": 0.0110752
+      }
+    },
+    "perTask": [
+      {
+        "taskId": "trivial-already-resolved",
+        "baseline": {
+          "taskId": "trivial-already-resolved",
+          "controlDecisionCount": 4,
+          "llmCallCount": 5,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 7000,
+          "simulatedLlmCostUsd": 0.0022524999999999997,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "trivial-already-resolved",
+          "controlDecisionCount": 4,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 4,
+          "simulatedLlmLatencyMs": 1350,
+          "simulatedLlmCostUsd": 0.00008385,
+          "realJevCallCount": 5,
+          "realJevLatencyMs": 3850.0939999999987,
+          "realJevAvgConfidence": 0.9289999999999999,
+          "realJevDecisionCount": 14,
+          "fallbackCount": 4,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "trivial-calculation",
+        "baseline": {
+          "taskId": "trivial-calculation",
+          "controlDecisionCount": 8,
+          "llmCallCount": 9,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 12600,
+          "simulatedLlmCostUsd": 0.0034525,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "trivial-calculation",
+          "controlDecisionCount": 8,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 8,
+          "simulatedLlmLatencyMs": 1350,
+          "simulatedLlmCostUsd": 0.00008324999999999999,
+          "realJevCallCount": 6,
+          "realJevLatencyMs": 2681.979799999999,
+          "realJevAvgConfidence": 0.8716666666666667,
+          "realJevDecisionCount": 18,
+          "fallbackCount": 6,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "trivial-file-lookup",
+        "baseline": {
+          "taskId": "trivial-file-lookup",
+          "controlDecisionCount": 8,
+          "llmCallCount": 9,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 12600,
+          "simulatedLlmCostUsd": 0.0037124999999999997,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "trivial-file-lookup",
+          "controlDecisionCount": 8,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 8,
+          "simulatedLlmLatencyMs": 1350,
+          "simulatedLlmCostUsd": 0.0001314,
+          "realJevCallCount": 7,
+          "realJevLatencyMs": 2813.6471999999994,
+          "realJevAvgConfidence": 0.8477777777777779,
+          "realJevDecisionCount": 22,
+          "fallbackCount": 4,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "trivial-doc-search",
+        "baseline": {
+          "taskId": "trivial-doc-search",
+          "controlDecisionCount": 8,
+          "llmCallCount": 9,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 12600,
+          "simulatedLlmCostUsd": 0.0038425,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "trivial-doc-search",
+          "controlDecisionCount": 8,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 8,
+          "simulatedLlmLatencyMs": 1350,
+          "simulatedLlmCostUsd": 0.0001917,
+          "realJevCallCount": 8,
+          "realJevLatencyMs": 2878.5523999999987,
+          "realJevAvgConfidence": 0.8122222222222223,
+          "realJevDecisionCount": 26,
+          "fallbackCount": 8,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "moderate-config-change",
+        "baseline": {
+          "taskId": "moderate-config-change",
+          "controlDecisionCount": 12,
+          "llmCallCount": 13,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 18200,
+          "simulatedLlmCostUsd": 0.0056549999999999994,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "moderate-config-change",
+          "controlDecisionCount": 12,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 12,
+          "simulatedLlmLatencyMs": 1350,
+          "simulatedLlmCostUsd": 0.00007935,
+          "realJevCallCount": 5,
+          "realJevLatencyMs": 2035.0617999999995,
+          "realJevAvgConfidence": 0.7742857142857142,
+          "realJevDecisionCount": 14,
+          "fallbackCount": 7,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "moderate-log-inspection",
+        "baseline": {
+          "taskId": "moderate-log-inspection",
+          "controlDecisionCount": 8,
+          "llmCallCount": 9,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 12600,
+          "simulatedLlmCostUsd": 0.003977499999999999,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "moderate-log-inspection",
+          "controlDecisionCount": 8,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 8,
+          "simulatedLlmLatencyMs": 1350,
+          "simulatedLlmCostUsd": 0.000117,
+          "realJevCallCount": 6,
+          "realJevLatencyMs": 2312.266600000001,
+          "realJevAvgConfidence": 0.7925,
+          "realJevDecisionCount": 18,
+          "fallbackCount": 10,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "moderate-test-run",
+        "baseline": {
+          "taskId": "moderate-test-run",
+          "controlDecisionCount": 12,
+          "llmCallCount": 13,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 18200,
+          "simulatedLlmCostUsd": 0.0056475,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "moderate-test-run",
+          "controlDecisionCount": 12,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 12,
+          "simulatedLlmLatencyMs": 1350,
+          "simulatedLlmCostUsd": 0.00007935,
+          "realJevCallCount": 5,
+          "realJevLatencyMs": 2115.7994,
+          "realJevAvgConfidence": 0.8216666666666668,
+          "realJevDecisionCount": 14,
+          "fallbackCount": 8,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "moderate-clarify-ambiguous",
+        "baseline": {
+          "taskId": "moderate-clarify-ambiguous",
+          "controlDecisionCount": 4,
+          "llmCallCount": 5,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 7000,
+          "simulatedLlmCostUsd": 0.00224,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "moderate-clarify-ambiguous",
+          "controlDecisionCount": 4,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 4,
+          "simulatedLlmLatencyMs": 2300,
+          "simulatedLlmCostUsd": 0.0005534,
+          "realJevCallCount": 5,
+          "realJevLatencyMs": 1946.5345999999954,
+          "realJevAvgConfidence": 0.7899999999999999,
+          "realJevDecisionCount": 14,
+          "fallbackCount": 3,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "complex-checkout-investigation",
+        "baseline": {
+          "taskId": "complex-checkout-investigation",
+          "controlDecisionCount": 16,
+          "llmCallCount": 17,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 23800,
+          "simulatedLlmCostUsd": 0.008724999999999997,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "complex-checkout-investigation",
+          "controlDecisionCount": 16,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 16,
+          "simulatedLlmLatencyMs": 4200,
+          "simulatedLlmCostUsd": 0.0032199999999999998,
+          "realJevCallCount": 7,
+          "realJevLatencyMs": 2667.849400000003,
+          "realJevAvgConfidence": 0.8847058823529412,
+          "realJevDecisionCount": 22,
+          "fallbackCount": 5,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "complex-retry-backoff-math",
+        "baseline": {
+          "taskId": "complex-retry-backoff-math",
+          "controlDecisionCount": 12,
+          "llmCallCount": 13,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 18200,
+          "simulatedLlmCostUsd": 0.006134999999999999,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "complex-retry-backoff-math",
+          "controlDecisionCount": 12,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 12,
+          "simulatedLlmLatencyMs": 1350,
+          "simulatedLlmCostUsd": 0.0000861,
+          "realJevCallCount": 5,
+          "realJevLatencyMs": 1956.1340999999957,
+          "realJevAvgConfidence": 0.7466666666666666,
+          "realJevDecisionCount": 14,
+          "fallbackCount": 8,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "complex-cross-file-audit",
+        "baseline": {
+          "taskId": "complex-cross-file-audit",
+          "controlDecisionCount": 12,
+          "llmCallCount": 13,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 18200,
+          "simulatedLlmCostUsd": 0.0062,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "complex-cross-file-audit",
+          "controlDecisionCount": 12,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 12,
+          "simulatedLlmLatencyMs": 3250,
+          "simulatedLlmCostUsd": 0.0031422999999999998,
+          "realJevCallCount": 8,
+          "realJevLatencyMs": 2936.201200000003,
+          "realJevAvgConfidence": 0.8120833333333334,
+          "realJevDecisionCount": 26,
+          "fallbackCount": 2,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      },
+      {
+        "taskId": "complex-ambiguous-then-research",
+        "baseline": {
+          "taskId": "complex-ambiguous-then-research",
+          "controlDecisionCount": 16,
+          "llmCallCount": 17,
+          "llmCallsAvoided": 0,
+          "simulatedLlmLatencyMs": 23800,
+          "simulatedLlmCostUsd": 0.008444999999999998,
+          "realJevCallCount": 0,
+          "realJevLatencyMs": 0,
+          "realJevAvgConfidence": null,
+          "realJevDecisionCount": 0,
+          "fallbackCount": 0,
+          "fallbackReasons": [],
+          "completed": true
+        },
+        "jevGated": {
+          "taskId": "complex-ambiguous-then-research",
+          "controlDecisionCount": 16,
+          "llmCallCount": 3,
+          "llmCallsAvoided": 16,
+          "simulatedLlmLatencyMs": 4200,
+          "simulatedLlmCostUsd": 0.0033075,
+          "realJevCallCount": 8,
+          "realJevLatencyMs": 3466.432200000003,
+          "realJevAvgConfidence": 0.7355555555555555,
+          "realJevDecisionCount": 26,
+          "fallbackCount": 8,
+          "fallbackReasons": [
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE",
+            "LOW_CONFIDENCE"
+          ],
+          "completed": true
+        }
+      }
+    ],
+    "savings": {
+      "measurement": "simulated",
+      "llmCallsAvoidedTotal": 96,
+      "simulatedCostSavedUsd": 0.04920979999999999,
+      "simulatedLatencySavedMs": 160050
+    },
+    "jevBillingCost": "n/a — no public pricing found as of 2026-09"
+  }
+}
