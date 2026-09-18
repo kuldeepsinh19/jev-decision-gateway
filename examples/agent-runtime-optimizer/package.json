@@ -1,0 +1,22 @@
+{
+  "name": "@jev-decision-gateway/example-agent-runtime-optimizer",
+  "version": "0.0.1",
+  "description": "Flagship example: an AI agent control loop (tool routing, continue/stop, model tier, verification) gated by jev-decision-gateway instead of ad-hoc LLM calls.",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "start": "tsx src/run.ts"
+  },
+  "dependencies": {
+    "@jev-decision-gateway/core": "0.0.1",
+    "@jev-decision-gateway/providers": "0.0.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "vitest": "^1.0.0"
+  }
+}
