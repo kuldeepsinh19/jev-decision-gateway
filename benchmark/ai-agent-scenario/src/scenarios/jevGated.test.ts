@@ -5,6 +5,7 @@ import { MockProvider } from "@jev-decision-gateway/providers";
 import type { LLMProvider, SimulatedTier } from "@jev-decision-gateway/providers";
 
 import { BENCHMARK_TASKS, controlDecisionCountFor } from "../tasks.js";
+import { baselineLlmCallCountFor } from "./baseline.js";
 import { runJevGated } from "./jevGated.js";
 
 function makeProviders(): Record<SimulatedTier, LLMProvider> {
@@ -43,9 +44,13 @@ describe("runJevGated", () => {
     const result = await runJevGated(task, gateway, makeProviders());
 
     expect(result.controlDecisionCount).toBe(controlDecisionCountFor(task));
-    // All control decisions were routed through Jev, not a dedicated LLM call.
-    expect(result.llmCallsAvoided).toBe(result.controlDecisionCount);
     expect(result.llmCallCount).toBeGreaterThanOrEqual(0);
+    // REGRESSION GUARD (Task 11 review finding #1): `llmCallsAvoided` must always be the true,
+    // reconciling `(what the naive baseline spends on this task) - (what this scenario's own
+    // actual llmCallCount was)`, NOT a hardcoded `controlDecisionCount` that silently assumes
+    // `llmCallCount` is always exactly 1. Deliberately does not special-case this task's own
+    // `llmCallCount` value -- this must hold whatever that actual count turns out to be.
+    expect(result.llmCallsAvoided).toBe(baselineLlmCallCountFor(task) - result.llmCallCount);
   });
 
   it("never throws and always finishes, even across every task in the benchmark with no API key", async () => {

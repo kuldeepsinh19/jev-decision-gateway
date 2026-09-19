@@ -40,6 +40,19 @@ export interface ScenarioRunResult {
 }
 
 /**
+ * The naive baseline's total LLM-call count for a task: one dedicated call per control decision
+ * (`controlDecisionCountFor(task)` of them), plus one more for the actual final-answer generation.
+ * Exported (not just inlined in `runBaseline` below) so `jevGated.ts` can compute the *same* naive
+ * reference count for a task without re-running `runBaseline` itself -- this is what makes that
+ * scenario's own `llmCallsAvoided` field a true, reconciling `(baseline call count for this task) -
+ * (jevGated's own actual call count for this task)` instead of an assumption that jevGated always
+ * makes exactly one real generation call (it does not -- see `jevGated.ts`'s comment on this).
+ */
+export function baselineLlmCallCountFor(task: BenchmarkTask): number {
+  return controlDecisionCountFor(task) + 1;
+}
+
+/**
  * "Naive" baseline: every control decision (continue? which tool? verify?) is answered by a
  * dedicated call to `provider.complete()` at the strong tier -- no batching, no Jev. Makes exactly
  * `controlDecisionCountFor(task)` such calls, plus one more for the actual final-answer
@@ -82,7 +95,7 @@ export async function runBaseline(
   return {
     taskId: task.id,
     controlDecisionCount,
-    llmCallCount: controlDecisionCount + 1,
+    llmCallCount: baselineLlmCallCountFor(task),
     llmCallsAvoided: 0, // baseline is the reference: it avoids nothing.
     simulatedLlmLatencyMs,
     simulatedLlmCostUsd,

@@ -121,6 +121,74 @@ describe("compare", () => {
   });
 });
 
+describe("per-task 'LLM calls avoided' reconciliation (Task 11 review fix #1 regression guard)", () => {
+  // REGRESSION GUARD: before the fix, jevGated.ts's `llmCallsAvoided` field was hardcoded to
+  // `controlDecisionCount`, which silently assumed every task's actual jevGated `llmCallCount` was
+  // exactly 1. That assumption happened to be invisible whenever every fixture's llmCallCount really
+  // was 1 (the old bug and the correct formula agree in that special case) -- which is exactly why
+  // it shipped unnoticed. This fixture deliberately varies jevGated's per-task llmCallCount (1, 3,
+  // 2 -- not all 1) so the two formulas diverge, and asserts the per-task column now reconciles
+  // exactly with the aggregate total, both as a sum and via the printed table.
+  function jevFixtureWithLlmCallCount(
+    taskId: string,
+    controlDecisionCount: number,
+    llmCallCount: number
+  ): ScenarioRunResult {
+    return {
+      taskId,
+      controlDecisionCount,
+      llmCallCount,
+      llmCallsAvoided: controlDecisionCount + 1 - llmCallCount, // mirrors baselineLlmCallCountFor(task) - llmCallCount
+      simulatedLlmLatencyMs: 450 * llmCallCount,
+      simulatedLlmCostUsd: 0.00002 * llmCallCount,
+      realJevCallCount: 5,
+      realJevLatencyMs: 2000,
+      realJevAvgConfidence: 0.8,
+      realJevDecisionCount: 5,
+      fallbackCount: 1,
+      fallbackReasons: ["LOW_CONFIDENCE"],
+      completed: true,
+    };
+  }
+
+  it("sums per-task to the same total as the aggregate savings, with jevGated call counts of 1, 3, and 2", () => {
+    const baselines: ScenarioRunResult[] = [
+      baselineFixture("task-a", 5, 0.001, 1000), // controlDecisionCount = 4
+      baselineFixture("task-b", 9, 0.002, 2000), // controlDecisionCount = 8
+      baselineFixture("task-c", 13, 0.003, 3000), // controlDecisionCount = 12
+    ];
+    const jevGated: ScenarioRunResult[] = [
+      jevFixtureWithLlmCallCount("task-a", 4, 1), // 1 real generation call -> avoided 4
+      jevFixtureWithLlmCallCount("task-b", 8, 3), // verify-retry loop, 3 real generation calls -> avoided 6, not 8
+      jevFixtureWithLlmCallCount("task-c", 12, 2), // 2 real generation calls -> avoided 11, not 12
+    ];
+    const perTask = baselines.map((b, i) => ({ taskId: b.taskId, baseline: b, jevGated: jevGated[i] }));
+
+    const baselineAgg = aggregate(baselines);
+    const jevAgg = aggregate(jevGated);
+    const comparison = compare(baselineAgg, jevAgg, perTask);
+
+    const perTaskSum = comparison.perTask.reduce((sum, row) => sum + row.jevGated.llmCallsAvoided, 0);
+
+    // Concrete numbers, not just self-consistency: (5-1) + (9-3) + (13-2) = 4 + 6 + 11 = 21.
+    expect(perTaskSum).toBe(21);
+    expect(comparison.savings.llmCallsAvoidedTotal).toBe(21);
+    expect(perTaskSum).toBe(comparison.savings.llmCallsAvoidedTotal);
+
+    // And the printed per-task table must show the reconciling number (6 for task-b), never the
+    // pre-fix value that assumed llmCallCount === 1 (which would have printed 8).
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    printReport(comparison);
+    const lines = logSpy.mock.calls.map((call) => String(call[0]));
+    logSpy.mockRestore();
+
+    const taskBLine = lines.find((line) => line.startsWith("task-b"));
+    expect(taskBLine).toBeDefined();
+    const cells = taskBLine!.split("|").map((c) => c.trim());
+    expect(cells[cells.length - 1]).toBe("6");
+  });
+});
+
 describe("printReport", () => {
   it("prints a table without throwing, including the required footer lines", () => {
     const baselineAgg = aggregate(baselineResults);
