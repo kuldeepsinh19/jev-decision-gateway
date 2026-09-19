@@ -216,45 +216,48 @@ cost/latency number explicitly labeled as simulated in the output.
 
 ## Benchmark Results
 
-A real, live-key run of `benchmark/ai-agent-scenario` across all 12 synthetic tasks (2026-09-19,
+A real, live-key run of `benchmark/ai-agent-scenario` across all 12 synthetic tasks (2026-09-19 UTC,
 `@typesafe-ai/sdk@0.6.0`) — full write-up, methodology, and honest limitations discussion in
 **[`benchmark/ai-agent-scenario/REPORT.md`](benchmark/ai-agent-scenario/REPORT.md)**; raw JSON in
 [`benchmark/ai-agent-scenario/results/example-run.json`](benchmark/ai-agent-scenario/results/example-run.json).
+(A Task 11 code review found and fixed a per-task "LLM calls avoided" reconciliation bug — see
+`REPORT.md`'s "Fixed" section — so these are the corrected, re-run numbers.)
 
 | Metric | `baseline` (all simulated) | `jevGated` (real Jev + simulated generation) |
 |---|---|---|
 | LLM calls | 132 | 36 |
-| Simulated LLM latency | 184,800.0 ms | 24,750.0 ms |
-| Simulated LLM cost | $0.060285 | $0.011075 |
-| Real Jev calls | — (0) | 75 (228 decisions, 31,660.6 ms total, avg confidence 0.82) |
-| Real Jev fallback rate | — | 32.0% (73/228 decisions, all `LOW_CONFIDENCE` — 0 `ERROR`, 0 `MISSING_KEY`) |
+| Simulated LLM latency | 184,800.0 ms | 23,800.0 ms |
+| Simulated LLM cost | $0.060285 | $0.010292 |
+| Real Jev calls | — (0) | 75 (228 decisions, 32,232.9 ms total, avg confidence 0.81) |
+| Real Jev fallback rate | — | 30.7% (70/228 decisions, all `LOW_CONFIDENCE` — 0 `ERROR`, 0 `MISSING_KEY`) |
 
-**Savings (simulated)**: 96 LLM calls avoided, $0.049210 saved, 160,050.0 ms saved. Jev's own
-billing cost: `n/a — no public pricing found as of 2026-09`.
+**Savings (simulated)**: 96 LLM calls avoided, $0.049993 saved, 161,000.0 ms saved — and the
+per-task "LLM calls avoided" column in `REPORT.md` now genuinely sums to this same 96, task by
+task. Jev's own billing cost: `n/a — no public pricing found as of 2026-09`.
 
 One real, verbatim transcript excerpt (from `examples/agent-runtime-optimizer`, real key, task
 "Inspect recent logs for an error, and report a one-line summary of what you found."):
 
 ```
-[Pre-flight chain: 2 dependent Jev calls, category="lookup", toolSubset="searchOnly", 2826.0ms real]
+[Pre-flight chain: 2 dependent Jev calls, category="lookup", toolSubset="searchOnly", 2750.2ms real]
 
 --- Iteration 1/6 ---
-[Jev fan-out: 1 systemOne call, 4 questions, 404.3ms real, tokens in=740 out=121]
-  modelTier        -> mock-fast    (confidence 0.74)
-  nextTool         -> search       (confidence 0.90)
-  shouldContinue   -> continue     (confidence 0.80)
+[Jev fan-out: 1 systemOne call, 4 questions, 411.8ms real, tokens in=740 out=121]
+  modelTier        -> mock-fast    (confidence 0.70)
+  nextTool         -> search       (confidence 0.86)
+  shouldContinue   -> continue     (confidence 0.78)
   verifyOutput     -> fail         (confidence 0.88)
 > tool:search("Inspect recent logs for an error, and report a one-line summary of what you found.") -> "[search] No canned result for "Inspect recent logs for an error, and report a one-line summary of what you found." (generic demo fallback -- the real tool would look this up live)."
 
 === Summary ===
 Iterations used: 4/6 | Verify retries: 2/2
-Real Jev calls: 6 (4582.1ms total measured, avg confidence 0.79)
+Real Jev calls: 6 (4272.2ms total measured, avg confidence 0.77)
 Simulated LLM calls: 3 (1350.0ms simulated, $0.000112 simulated)
 Fallbacks triggered: 8
 ```
 
 See `REPORT.md` for the full per-task breakdown, real latency distribution, confidence-distribution
-discussion, and limitations.
+discussion, acceptance-criteria verification (test/typecheck/lint/security), and limitations.
 
 ## What this is / isn't
 
