@@ -14,9 +14,12 @@ roughly where it would live if built later.
   structure as `examples/agent-runtime-optimizer`.
 
 - **Output-verification as its own standalone example** — the flagship example already includes a
-  `verifyOutput` Noul gate inline (`examples/agent-runtime-optimizer/src/decisions.ts`), but a
-  dedicated example focused purely on verification/escalation patterns was deferred as separate
-  scope. Would live in a new `examples/output-verification` workspace package.
+  `verifyOutput` Noul gate inline (`examples/agent-runtime-optimizer/src/decisions.ts`), but it's a
+  speculative pre-check asked alongside `nextTool`/`shouldContinue`/`modelTier` before that
+  iteration's generation step runs (only informed by real draft content on a verify-retry — see
+  `docs/jev-understanding.md` section 6), not a standalone "verify this finished output" gate. A
+  dedicated example focused purely on post-generation verification/escalation patterns was deferred
+  as separate scope. Would live in a new `examples/output-verification` workspace package.
 
 - **Coding-agent example** — a third example applying the gateway to a code-generation agent's
   control decisions (which file to edit, whether to run tests, whether a diff is safe to apply).
@@ -58,7 +61,7 @@ roughly where it would live if built later.
   adopted later.
 
 - **CI workflow** — there is no GitHub Actions (or other CI) workflow in this repository yet; `npm
-  test`/`npm run typecheck`/`npm run lint` are run locally/manually. Deferred for time. Would live at
+test`/`npm run typecheck`/`npm run lint` are run locally/manually. Deferred for time. Would live at
   `.github/workflows/ci.yml`, running the same three root scripts across the whole workspace.
 
 - **Separate `policy`/`observability` packages** — the policy engine, fallback engine, and trace
@@ -70,3 +73,12 @@ roughly where it would live if built later.
   without also depending on the gateway). Would involve extracting `src/policy/`, `src/fallback/`,
   and `src/trace/` into their own `packages/policy` and `packages/observability` workspace packages
   if a real standalone consumer ever needs one without the other.
+
+## Known constraints
+
+- **`openai` is pinned to `^6.49.0`, not the newer `7.x` line** (`packages/providers/package.json`).
+  `openai@7` requires Node >=22, which conflicts with this repo's `engines`/`.nvmrc` pin of Node 20
+  (`package.json`'s root `"engines": { "node": ">=20" }`). Revisit this pin if/when the project
+  moves its minimum supported Node version to 22+; until then, `OpenAIProvider`
+  (`packages/providers/src/openai/provider.ts`) stays on the `6.x` line intentionally, not because
+  it's stale.

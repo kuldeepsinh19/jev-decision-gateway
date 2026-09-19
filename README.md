@@ -8,7 +8,7 @@ actually needed.
 
 ## The problem
 
-Modern AI applications and agents make a huge number of small, frequent, *structured* decisions
+Modern AI applications and agents make a huge number of small, frequent, _structured_ decisions
 that don't require text generation at all: "should the agent keep going?", "which tool next?", "is
 this document relevant?", "does this output pass verification?", "should we escalate?". Routing
 every one of these through an expensive generative LLM means paying generation-level latency and
@@ -54,7 +54,7 @@ It is **not** a replacement for a generative LLM, and this project does not clai
 write a paragraph, synthesize a summary, produce code, or carry out open-ended, multi-step
 reasoning — there's no enumerable `criteria` for "write a helpful response to this ticket." Every
 example and benchmark here still calls a real `LLMProvider` (`packages/providers`) for the
-generation half of the work; Jev only ever gates *when* and *how* that generation happens.
+generation half of the work; Jev only ever gates _when_ and _how_ that generation happens.
 
 See **[`docs/jev-understanding.md`](docs/jev-understanding.md)** for the full picture: confirmed
 SDK shapes, confidence semantics (including Noul's derived-confidence convention), auth/transport/
@@ -64,9 +64,19 @@ error handling, and an honest "when Jev is and isn't the right tool" section.
 
 ```sh
 npm install
+npm run build
 cp .env.example .env
 # then fill in .env — see below
 ```
+
+`npm run build` (a workspace-wide `tsc -b`) is not optional here: every package's `package.json`
+points its `main`/`types` fields at `./dist`, not `./src`, and there is no dev-mode source alias —
+without a build, nothing importable from another workspace package (which is most of this repo)
+actually resolves yet. Run it once after `npm install` on a fresh clone, and again after pulling
+changes to any `packages/*`/`examples/*`/`benchmark/*` source file you didn't build yourself. (The
+CLI's `npx jev-gateway` command below also only works from inside a clone of this workspace — it is
+a `"private": true`, unpublished package, not something installable via `npx` from the npm
+registry.)
 
 `.env.example` (verbatim):
 
@@ -93,7 +103,11 @@ types answered in a single batched call:
 
 ```ts
 import { DecisionGateway } from "@jev-decision-gateway/core";
-import type { ChoiceDecisionDef, NoulDecisionDef, ScoreDecisionDef } from "@jev-decision-gateway/core";
+import type {
+  ChoiceDecisionDef,
+  NoulDecisionDef,
+  ScoreDecisionDef,
+} from "@jev-decision-gateway/core";
 
 const gateway = new DecisionGateway();
 
@@ -112,8 +126,7 @@ const sentiment: ChoiceDecisionDef = {
 const quality: ScoreDecisionDef = {
   kind: "score",
   id: "quality",
-  instructions:
-    "Rate how clearly the text is written, from 0 (very unclear) to 1 (very clear).",
+  instructions: "Rate how clearly the text is written, from 0 (very unclear) to 1 (very clear).",
   levels: ["unclear", "somewhat clear", "clear", "very clear"],
   policy: {
     minConfidence: 0,
@@ -187,8 +200,10 @@ methods' concrete signatures, and the trace-flow (`DecisionTrace`, `onTrace`, `T
 ## Run the flagship example and the benchmark
 
 The flagship example (`examples/agent-runtime-optimizer`) is an agent control loop — tool routing,
-continue/stop, model-tier selection, output verification — gated by `DecisionGateway` instead of
-ad-hoc LLM calls, including a `gateway.chain()` pre-flight step that classifies the task and picks
+continue/stop, model-tier selection, and a speculative output-verification pre-check (`verifyOutput`
+is asked before generation runs each iteration, so it's only actually informed by real draft content
+on a verify-retry — see `docs/jev-understanding.md` section 6) — gated by `DecisionGateway` instead
+of ad-hoc LLM calls, including a `gateway.chain()` pre-flight step that classifies the task and picks
 a tool subset before the main loop starts. The benchmark (`benchmark/ai-agent-scenario`) runs 12
 synthetic tasks through both a naive baseline (one LLM call per control decision) and the
 JEV-gated version, and reports the difference.
@@ -223,13 +238,13 @@ A real, live-key run of `benchmark/ai-agent-scenario` across all 12 synthetic ta
 (A Task 11 code review found and fixed a per-task "LLM calls avoided" reconciliation bug — see
 `REPORT.md`'s "Fixed" section — so these are the corrected, re-run numbers.)
 
-| Metric | `baseline` (all simulated) | `jevGated` (real Jev + simulated generation) |
-|---|---|---|
-| LLM calls | 132 | 36 |
-| Simulated LLM latency | 184,800.0 ms | 23,800.0 ms |
-| Simulated LLM cost | $0.060285 | $0.010292 |
-| Real Jev calls | — (0) | 75 (228 decisions, 32,232.9 ms total, avg confidence 0.81) |
-| Real Jev fallback rate | — | 30.7% (70/228 decisions, all `LOW_CONFIDENCE` — 0 `ERROR`, 0 `MISSING_KEY`) |
+| Metric                 | `baseline` (all simulated) | `jevGated` (real Jev + simulated generation)                                |
+| ---------------------- | -------------------------- | --------------------------------------------------------------------------- |
+| LLM calls              | 132                        | 36                                                                          |
+| Simulated LLM latency  | 184,800.0 ms               | 23,800.0 ms                                                                 |
+| Simulated LLM cost     | $0.060285                  | $0.010292                                                                   |
+| Real Jev calls         | — (0)                      | 75 (228 decisions, 32,232.9 ms total, avg confidence 0.81)                  |
+| Real Jev fallback rate | —                          | 30.7% (70/228 decisions, all `LOW_CONFIDENCE` — 0 `ERROR`, 0 `MISSING_KEY`) |
 
 **Savings (simulated)**: 96 LLM calls avoided, $0.049993 saved, 161,000.0 ms saved — and the
 per-task "LLM calls avoided" column in `REPORT.md` now genuinely sums to this same 96, task by
@@ -268,7 +283,7 @@ outage, timeout, missing key, or malformed response resolves to a documented, pe
 action instead of throwing.
 
 **This isn't**: a replacement for generative LLMs, a guarantee that Jev is always cheaper or faster
-than the alternative for your workload, or a system that should decide *everything*. It doesn't do
+than the alternative for your workload, or a system that should decide _everything_. It doesn't do
 open-ended generation, long-form synthesis, or complex multi-step reasoning — those still belong to
 `OpenAIProvider`/`AnthropicProvider` (or any `LLMProvider`), invoked only when the policy layer
 decides generation is actually warranted. The hard iteration/retry caps in the flagship example are

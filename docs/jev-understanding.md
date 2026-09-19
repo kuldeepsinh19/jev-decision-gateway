@@ -21,7 +21,7 @@ prose to parse. The SDK's client class is `TypeSafeClient`, and a single request
 
 ## 2. Why "System One" thinking — bounded structured decisions vs. generative calls
 
-Modern AI applications and agents make a huge number of small, frequent, *structured* decisions
+Modern AI applications and agents make a huge number of small, frequent, _structured_ decisions
 that don't actually require generation: "should the agent keep going?", "which tool next?", "is
 this document relevant?", "does this output pass verification?", "should we escalate?". Routing
 every one of these through an expensive generative LLM call means paying generation-level latency
@@ -44,8 +44,14 @@ Confirmed directly from the installed SDK's type declarations
 `packages/core/src/jev/builders.ts`'s `toSdkQuestion()`:
 
 ```ts
-declare const choice: <const T extends ChoiceCriteria>(instructions: EntryType, criteria: T) => ChoiceQuestion<T>;
-declare const score$1: <const T extends ScoreCriteria>(instructions: EntryType, criteria: T) => ScoreQuestion<T>; // exported as `score`
+declare const choice: <const T extends ChoiceCriteria>(
+  instructions: EntryType,
+  criteria: T
+) => ChoiceQuestion<T>;
+declare const score$1: <const T extends ScoreCriteria>(
+  instructions: EntryType,
+  criteria: T
+) => ScoreQuestion<T>; // exported as `score`
 declare const noul: (instructions?: EntryType, criteria?: NoulQuestion["criteria"]) => NoulQuestion;
 ```
 
@@ -132,6 +138,15 @@ checkpoint: `buildMainCheckpointDecisions()` builds a 4-question `DecisionSet` (
 `nextTool`, `shouldContinue`, `verifyOutput`), and `loop.ts` answers all four in a single
 `gateway.evaluate()` call per iteration.
 
+`verifyOutput` is the clearest example of why this pattern is called _speculative_: it is asked in
+the same fan-out as `nextTool`/`shouldContinue`/`modelTier`, before that iteration's generation
+step has run at all, so the very first time it's asked in a given generation cycle there is no
+draft answer yet for it to judge -- it is a speculative pre-check, not unconditional "output
+verification." Only on a verify-retry iteration (a prior iteration's `generate()` already ran) does
+`loop.ts`'s `buildDecisionState()` include the real `draftAnswer` text in `state`, at which point
+`verifyOutput`'s answer is actually informed by the content it's judging. See
+`examples/agent-runtime-optimizer/src/loop.ts`'s `buildDecisionState()`.
+
 ## 7. Dependent/sequential decisions
 
 The SDK has **no native chaining primitive** — there is no way to tell `systemOne` "answer this
@@ -162,7 +177,7 @@ const chainResult = await gateway.chain({ task }, async ({ evaluate }) => {
 ```
 
 The first step classifies the task into a coarse category (`lookup` / `calculation` /
-`multi-step`); the second step's `options`/`instructions` are computed *from* the first step's
+`multi-step`); the second step's `options`/`instructions` are computed _from_ the first step's
 resolved category (`buildToolSubsetDecision(category)` in `examples/agent-runtime-optimizer/src/decisions.ts`
 picks a genuinely different tool-subset question depending on which category was resolved) — a real
 dependent pair, not two independent questions asked back to back.
@@ -178,6 +193,7 @@ calls.
 **Transport**: `TypeSafeClient.systemOne(request, { signal })`, one HTTP call per invocation.
 
 **Error codes**, confirmed by reading `dist/index.mjs`'s `APIError.fromResponse`:
+
 - `401` → `AuthenticationError`
 - `422` → `UnprocessableEntityError`
 - `429` → `RateLimitError` (carries `retryAfterMs`)
@@ -242,7 +258,7 @@ multi-step reasoning where the "answer" isn't from a small fixed set decided in 
 no `criteria` you could enumerate for "write a helpful response to this support ticket." Every
 example and benchmark in this repository still uses a real LLM-provider interface
 (`packages/providers`'s `LLMProvider`, backed by `OpenAIProvider`/`AnthropicProvider`/`MockProvider`)
-for the generation half of the work; Jev only ever gates *when* and *how* that generation happens,
+for the generation half of the work; Jev only ever gates _when_ and _how_ that generation happens,
 never replaces it. If your workload is mostly open-ended generation with few or no bounded
 control decisions in front of it, a decision gateway like this one has little to offer — it earns
 its keep specifically where many small structured decisions would otherwise be routed through an
@@ -251,7 +267,7 @@ expensive generative call.
 ## 11. Sources & verification log
 
 - **Package**: `@typesafe-ai/sdk`, version **`0.6.0`** (resolved by `npm install
-  @typesafe-ai/sdk --workspace packages/core`; confirmed still `0.6.0` in
+@typesafe-ai/sdk --workspace packages/core`; confirmed still `0.6.0` in
   `node_modules/@typesafe-ai/sdk/package.json` as of 2026-09-19).
 - **Files directly inspected**:
   - `node_modules/@typesafe-ai/sdk/dist/index.d.mts` (full type declarations, 407 lines) —
@@ -263,9 +279,9 @@ expensive generative call.
     behavior not visible from types alone.
   - `node_modules/@typesafe-ai/sdk/README.md` — confirms the real `choice(instructions, criteria)`
     argument order via its own quickstart example.
-- **Dates**: initial verification during Task 2, **2026-09-17** (commit `89bb767`, see
-  `.superpowers/sdd/build-goal-jev-distributed-pine/task-2-report.md`); this document written and
-  the same package re-checked, **2026-09-19** (Task 10).
+- **Dates**: initial verification during Task 2, **2026-09-17** (commit `89bb767`); this document
+  written and the same package re-checked, **2026-09-19** (Task 10); real, live-key network calls
+  made during Task 11's benchmark run, also **2026-09-19** (see the next two bullets).
 - **Directly observed** (read from the installed package's own type declarations or bundled
   source — not inferred): all three builders' `(instructions, criteria)` argument order; `Score`'s
   criteria as an ordered tuple keyed by score position; `Noul`'s lack of a native confidence field;
@@ -273,10 +289,17 @@ expensive generative call.
   names (`input_tokens`/`output_tokens`) and non-optional typing; the SDK's default per-attempt
   `timeout` of 10000ms; the `retry` config field names (`maxRetries`/`backoffInitialMs`/
   `backoffMaxMs`).
-- **Not directly observed / inferred or unconfirmed**: actual runtime response payloads from a
-  live API call — no live call to `api.typesafe.ai` has been made as of this writing (that is
-  reserved for a later, separately-gated step once a real `TYPESAFE_API_KEY` is available; see
-  `packages/core/test/live/jev.live.test.ts`, which `describe.skipIf`s cleanly without one). In
-  particular, real-world precision/typical values for `confidence`/`probabilities`, and whether a
-  live `529` response is ever actually observed in practice, remain unconfirmed — only the SDK's
-  code path for classifying one (as `InternalServerError`) has been confirmed.
+- **Confirmed via a real, live-key run** (Task 11, **2026-09-19** UTC — corrected here: an earlier
+  revision of this section incorrectly claimed no live call had ever been made): 75 real network
+  calls to `https://api.typesafe.ai`, made with a real `TYPESAFE_API_KEY`, across
+  `benchmark/ai-agent-scenario`'s full 12-task benchmark (228 real decisions answered). Real,
+  measured (not inferred) values from that run: per-task average confidence ranged 0.72–0.93
+  (0.81 overall, call-weighted across tasks); per-task real Jev latency ranged 1,845.8 ms–3,942.0 ms
+  total; 70 of 228 decisions fell back, all `LOW_CONFIDENCE` (0 `ERROR`, 0 `MISSING_KEY`). Full
+  write-up, including the per-call latency breakdown and methodology: `benchmark/ai-agent-scenario/
+REPORT.md`. `packages/core/test/live/jev.live.test.ts` (which `describe.skipIf`s cleanly without a
+  key) also runs against the live API for real whenever `TYPESAFE_API_KEY` is set.
+- **Still not directly observed / unconfirmed**: whether a live `529` response is ever actually
+  observed in practice — none of the 75 real calls above hit one (0 `ERROR`-classified fallbacks
+  across the whole run); only the SDK's code path for classifying a `529` (as `InternalServerError`)
+  has been confirmed by reading its source, not by observing one occur.

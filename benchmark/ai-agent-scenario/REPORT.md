@@ -76,16 +76,16 @@ the "Simulated LLM-call-avoidance comparison" section and the full console table
 
 **Totals across all 12 tasks, `jevGated` scenario:**
 
-| Metric | Value |
-|---|---|
-| Real Jev calls (`gateway.evaluate()`/chain steps) | 75 |
-| Real Jev decisions answered (Choice/Score/Noul, across those 75 calls) | 228 |
-| Total real Jev latency (sum of `EvaluationResult.latencyMs`) | 32,232.9 ms |
-| Average real Jev confidence (weighted across decisions with a non-null confidence) | 0.81 |
-| Real fallback count (decision-level) | 70 |
-| Real fallback rate (70 / 228 decisions) | 30.7% |
-| Fallback reason breakdown, this run | 70x `LOW_CONFIDENCE`, 0x `ERROR`, 0x `MISSING_KEY` |
-| Tasks completed (both scenarios) | 12 / 12 |
+| Metric                                                                                             | Value                                              |
+| -------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Real Jev calls (`gateway.evaluate()`/chain steps)                                                  | 75                                                 |
+| Real Jev decisions answered (Choice/Score/Noul, across those 75 calls)                             | 228                                                |
+| Total real Jev latency (sum of `EvaluationResult.latencyMs`)                                       | 32,232.9 ms                                        |
+| Average real Jev confidence (call-weighted mean of each task's own average, by `realJevCallCount`) | 0.81                                               |
+| Real fallback count (decision-level)                                                               | 70                                                 |
+| Real fallback rate (70 / 228 decisions)                                                            | 30.7%                                              |
+| Fallback reason breakdown, this run                                                                | 70x `LOW_CONFIDENCE`, 0x `ERROR`, 0x `MISSING_KEY` |
+| Tasks completed (both scenarios)                                                                   | 12 / 12                                            |
 
 **Per-task breakdown** (from the console table, reproduced verbatim below): real Jev call counts
 per task ranged from 5 to 8, real per-task Jev latency from 1,845.8 ms to 3,942.0 ms, real
@@ -98,16 +98,16 @@ flat list of individual call samples, so a true per-call min/avg/p95 across all 
 still cannot be reconstructed from the checked-in JSON alone (unchanged limitation — see below).
 Rather than repeat unverified figures from a separate, earlier session, this revision reports the
 individual per-call latencies actually printed by one real, live-key run of
-`examples/agent-runtime-optimizer/src/run.ts` performed during this fix's own verification (see
-`task-11-fix1-notes.md`):
+`examples/agent-runtime-optimizer/src/run.ts` performed during this fix's own verification (5
+samples covering 6 calls — the pre-flight row combines 2 dependent calls into one reported total):
 
-| Call | Latency (real) |
-|---|---|
+| Call                                           | Latency (real)                    |
+| ---------------------------------------------- | --------------------------------- |
 | Pre-flight chain (2 dependent calls, combined) | 2,750.2 ms total (~1,375 ms/call) |
-| Iteration 1 fan-out | 411.8 ms |
-| Iteration 2 fan-out | 425.8 ms |
-| Iteration 3 fan-out | 350.5 ms |
-| Iteration 4 fan-out | 333.8 ms |
+| Iteration 1 fan-out                            | 411.8 ms                          |
+| Iteration 2 fan-out                            | 425.8 ms                          |
+| Iteration 3 fan-out                            | 350.5 ms                          |
+| Iteration 4 fan-out                            | 333.8 ms                          |
 
 The combined pre-flight-chain figure is markedly higher per call than every subsequent single-call
 fan-out in the same run (~1,375 ms vs. 333.8-425.8 ms) — consistent with a cold-start pattern
@@ -130,20 +130,28 @@ the 70 real fallbacks recorded was `LOW_CONFIDENCE`.
 
 The overall real average confidence (0.81) sits comfortably above the demo's own
 `DEFAULT_MIN_CONFIDENCE = 0.6` policy threshold (`examples/agent-runtime-optimizer/src/decisions.ts`)
-— and yet the decision-level fallback rate was still 30.7%. Both are real and both are consistent:
-`avgConfidence` averages over every decision that did return a non-null confidence (i.e. every
-decision that did not fall back), so a high average among the decisions that succeeded does not
-contradict a meaningful fraction of decisions falling below 0.6 individually. Two things drive
-this, both real, observed patterns in this run's own trace data (not guesses):
+— and yet the decision-level fallback rate was still 30.7%. Both are real and both are consistent.
+The overall 0.81 figure is **call-weighted, not decision-weighted**: `scenarios/jevGated.ts`
+computes each task's own `realJevAvgConfidence` as a straight average over that task's individual
+decisions with a non-null confidence, and `metrics.ts`'s `aggregate()` then combines those 12
+per-task averages into the overall figure weighted by each task's `realJevCallCount` (not by its
+decision count) — see `metrics.ts`'s `confidencesWeighted`/`avgConfidence`. So a high call-weighted
+average among the decisions that succeeded does not contradict a meaningful fraction of decisions
+falling below 0.6 individually. Two things drive this, both real, observed patterns in this run's
+own trace data (not guesses):
 
 1. **`nextTool`/`modelTier` are 4- and 2-option `Choice` decisions respectively**, and Jev's
    `Choice` confidence reflects how concentrated its probability mass is on the winning option.
    Several `nextTool`/`modelTier` calls in this session's transcripts resolved with the winning
    option well short of 0.6 confidence (e.g. `modelTier -> mock-fast (confidence n/a) [FALLBACK:
-   LOW_CONFIDENCE]`) — plausible given how repetitive and low-signal the demo's canned tool
-   outputs are (the `search` tool's canned response is a generic "no result found" string for every
-   task in this repo, since no real search backend is wired in), which gives Jev genuinely little
-   new information to distinguish "keep going" from "finish" as iterations accumulate.
+LOW_CONFIDENCE]`) — plausible given how repetitive and low-signal the demo's canned tool outputs
+   were _at the time of this run_: `loop.ts` drove every tool call with the whole task string, but
+   `tools.ts`'s lookup only ever did an exact string match against its (much shorter) canned keys,
+   so every call in this run's transcripts fell through to the generic "no canned result" fallback
+   string regardless of task (a real lookup-key mismatch bug, since fixed — see final-review Finding
+   #4 — not a missing search backend; `tools.ts` did, and does, have real canned entries), which
+   gave Jev genuinely little new information to distinguish "keep going" from "finish" as iterations
+   accumulate.
 2. **This benchmark deliberately raises `maxIterations`** to `task.expectedIterations + 2` (min 6,
    see `scenarios/jevGated.ts`) specifically so the real loop can run past its "ideal" length —
    which means several tasks' later iterations are asking Jev to make calls in a state space
@@ -158,11 +166,11 @@ answer, exactly as designed.
 
 ## Simulated LLM-call-avoidance comparison
 
-| Metric | `baseline` (all simulated) | `jevGated` (real Jev + simulated generation) |
-|---|---|---|
-| LLM calls | 132 | 36 |
-| Simulated LLM latency | 184,800.0 ms | 23,800.0 ms |
-| Simulated LLM cost | $0.060285 | $0.010292 |
+| Metric                | `baseline` (all simulated) | `jevGated` (real Jev + simulated generation) |
+| --------------------- | -------------------------- | -------------------------------------------- |
+| LLM calls             | 132                        | 36                                           |
+| Simulated LLM latency | 184,800.0 ms               | 23,800.0 ms                                  |
+| Simulated LLM cost    | $0.060285                  | $0.010292                                    |
 
 **Savings (simulated)**: 96 LLM calls avoided, $0.049993 saved, 161,000.0 ms saved — in this
 12-task run, routing control decisions through Jev instead of a dedicated LLM call per decision
@@ -198,7 +206,7 @@ unchanged, in every run of this benchmark) — see the limitations section below
   savings table above nets out simulated LLM cost avoided, but does not, and cannot, net that
   against what Jev itself would cost to run in production. Treat the dollar figures here as cost
   avoided on the LLM side, never as net savings.
-- **The real Jev latency distribution above (n=5 real calls, this fix session)** is small and drawn
+- **The real Jev latency distribution above (5 samples covering 6 calls, this fix session)** is small and drawn
   from one flagship-example run rather than the full 75-call benchmark run itself (whose JSON report
   only carries per-task aggregates, not a flat list of every individual call's latency — see
   `metrics.ts`'s `RealJevAggregate` shape). The qualitative "cold first call is slower" pattern has
@@ -231,7 +239,7 @@ to the real-key run above), so the per-task "LLM calls avoided" reconciliation f
 fallback conditions too: the column still sums to exactly 96, matching this run's own
 `baseline.callCount [132] - jevGated.callCount [36] = 96`. Full console output for this re-check run
 is not checked in alongside `results/example-run.json` (only the real, live-key run is the checked-in
-reference artifact) but is reproduced in `task-11-fix1-notes.md` for the record.
+reference artifact) — the figures above are the complete, verified summary of it.
 
 ## Fail-open re-check (same code, key removed) — flagship example
 
@@ -253,8 +261,8 @@ exit code 0:
 - A final answer was produced; no crash, no unhandled rejection.
 
 This matches the documented `MISSING_KEY` fail-open path exactly, now confirmed for the flagship
-example specifically, not just the benchmark. Full console output is reproduced in
-`task-11-fix1-notes.md`.
+example specifically, not just the benchmark. (Console output for this specific re-check was not
+checked in separately; the bullet points above are its complete, verified summary.)
 
 ## Acceptance-criteria verification (Task 11 review finding #2)
 
@@ -276,7 +284,7 @@ example specifically, not just the benchmark. Full console output is reproduced 
   this machine, so the underlying `.mjs` entry is invoked instead): the live test genuinely executes
   (not skipped) and, run cleanly, **all 20 test files pass, 160/160 tests**. As already documented in
   the original Task 11 report and independently reconfirmed in this session: running the live test
-  *alone* passes reliably every time; running the *full* default-parallel suite occasionally hits the
+  _alone_ passes reliably every time; running the _full_ default-parallel suite occasionally hits the
   project's 1,500 ms client-side timeout on the live test's first real network call under worker-CPU
   contention, producing a real (not fabricated) `ERROR` fallback — 2 of 5 full-suite attempts in this
   session hit this, 3 of 5 (including one run with `--no-file-parallelism`) passed cleanly at
