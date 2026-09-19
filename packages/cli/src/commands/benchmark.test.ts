@@ -58,4 +58,19 @@ describe("registerBenchmarkCommand", () => {
     expect(logSpy).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
+
+  // REGRESSION GUARD (final-review Finding #5): --tasks used to be parsed with a bare
+  // `Number(value)`, so a non-numeric value silently became `NaN` and would have been passed
+  // straight through to runAiAgentBenchmark instead of being rejected up front.
+  it("rejects a non-numeric --tasks value with a clear error instead of silently passing NaN through", async () => {
+    const program = buildProgram();
+    vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+
+    await expect(
+      program.parseAsync(["benchmark", "--tasks", "not-a-number"], { from: "user" })
+    ).rejects.toThrow();
+
+    expect(runAiAgentBenchmarkMock).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
 });

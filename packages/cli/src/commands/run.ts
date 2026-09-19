@@ -1,6 +1,8 @@
 import type { Command } from "commander";
 import { runAgentRuntimeOptimizer } from "@jev-decision-gateway/example-agent-runtime-optimizer";
 
+import { parseNumberOption } from "../parseNumberOption.js";
+
 /** The only value this MVP's `--example` flag accepts. */
 export const VALID_EXAMPLES = ["agent-runtime-optimizer"] as const;
 
@@ -29,8 +31,10 @@ export function registerRunCommand(program: Command): void {
       `which example to run (valid values: ${VALID_EXAMPLES.join(", ")})`
     )
     .option("--task <task>", "task string to pass to the example")
-    .option("--max-iterations <n>", "override the example's max iterations", (value) =>
-      Number(value)
+    .option(
+      "--max-iterations <n>",
+      "override the example's max iterations",
+      parseNumberOption("--max-iterations")
     )
     .option("--provider <provider>", 'LLM provider to use (only "mock" is supported)', "mock")
     .action(async (options: RunCommandOptions) => {

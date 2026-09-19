@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { DecisionGateway, DecisionOutcome, EvaluationResult } from "@jev-decision-gateway/core";
+import type {
+  DecisionGateway,
+  DecisionOutcome,
+  EvaluationResult,
+} from "@jev-decision-gateway/core";
 import { MockProvider } from "@jev-decision-gateway/providers";
 
 import { runLoop, type TieredProviders } from "./loop.js";
@@ -198,5 +202,47 @@ describe("runLoop", () => {
     expect(result.finalState.done).toBe(true);
     expect(result.finalState.draftAnswer).not.toBeNull();
     expect(result.fallbackCount).toBeGreaterThan(0);
+  });
+
+  it("only includes state.draftAnswer once a prior iteration's generate() has actually run (Finding #6)", async () => {
+    const seenDraftAnswers: Array<unknown> = [];
+
+    const evaluate = vi.fn(
+      async (args: { state: Record<string, unknown>; decisions: Record<string, unknown> }) => {
+        const ids = Object.keys(args.decisions);
+        const answers: Record<string, DecisionOutcome> = { ...preflightAnswers() };
+        if (ids.includes("nextTool")) {
+          seenDraftAnswers.push(args.state.draftAnswer);
+          answers.modelTier = outcome("modelTier", "mock-fast");
+          answers.nextTool = outcome("nextTool", "finish");
+          answers.shouldContinue = outcome("shouldContinue", "stop");
+          // Fails every time, forcing a verify-retry each iteration up to maxVerifyRetries.
+          answers.verifyOutput = outcome("verifyOutput", "fail");
+        }
+        const decisions: Record<string, DecisionOutcome> = {};
+        for (const id of ids) decisions[id] = answers[id];
+        return { decisions, usage: null, trace: [], latencyMs: 2 };
+      }
+    );
+
+    const gateway = makeStubGateway({ evaluate: evaluate as never });
+    await runLoop(gateway, makeProviders(), "compute something", {
+      maxIterations: 3,
+      maxVerifyRetries: 2,
+    });
+
+    expect(seenDraftAnswers).toHaveLength(3);
+    // Iteration 1's fan-out (including this cycle's first verifyOutput ask) happens BEFORE
+    // generate() has ever run -- no draft exists yet, so `draftAnswer` must be absent from the
+    // state object entirely, not just null (a speculative pre-check, per the module doc comment).
+    expect(seenDraftAnswers[0]).toBeUndefined();
+    // Iterations 2 and 3 are verify-retries: a prior iteration's generate() already ran by then,
+    // so Jev now sees the real draft text it's being asked to (re-)verify (the exact text differs
+    // iteration to iteration, since the scratchpad grows with each refinement note, but it must
+    // always be the deterministic MockProvider's real generated text, never a placeholder).
+    expect(typeof seenDraftAnswers[1]).toBe("string");
+    expect(seenDraftAnswers[1]).toMatch(/^Simulated response to:/);
+    expect(typeof seenDraftAnswers[2]).toBe("string");
+    expect(seenDraftAnswers[2]).toMatch(/^Simulated response to:/);
   });
 });

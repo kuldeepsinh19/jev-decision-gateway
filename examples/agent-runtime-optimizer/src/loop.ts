@@ -80,13 +80,17 @@ export interface RunLoopResult {
 
 function toolInputFor(state: AgentState): string {
   // Deterministic demo simplification: every tool call in this example is driven by the task
-  // string itself (the canned lookup tables in tools.ts are keyed on exactly this kind of input).
-  // A production agent would derive a fresh, iteration-specific query here instead.
+  // string itself. `tools.ts`'s canned lookup tables match this against their keys with a
+  // keyword-overlap scorer (not just an exact string match), so a real, full-sentence task prompt
+  // that restates one of those keys' topics still resolves to that key's real canned response
+  // rather than always falling through to the generic fallback -- see `tools.ts`'s `bestKeyMatch()`.
+  // A production agent would still derive a fresh, iteration-specific query here instead of
+  // reusing the same whole-task string for every call across every iteration.
   return state.task;
 }
 
 function buildDecisionState(state: AgentState, preflight: PreflightSummary): DecisionState {
-  return {
+  const decisionState: DecisionState = {
     task: state.task,
     iteration: state.iteration,
     scratchpad: state.scratchpad,
@@ -95,6 +99,18 @@ function buildDecisionState(state: AgentState, preflight: PreflightSummary): Dec
     preflightCategory: preflight.category,
     preflightToolSubset: preflight.toolSubset,
   };
+  // FIX (final-review Finding #6): `verifyOutput` is asked in the same fan-out as `nextTool`/
+  // `shouldContinue`/`modelTier`, BEFORE this iteration's `generate()` call ever runs -- so the
+  // very first time it's asked in a given generation cycle, no draft answer exists yet at all and
+  // its answer is necessarily a speculative pre-check (see module doc comment on `runLoop` and
+  // `docs/jev-understanding.md` section 6's "speculative fan-out"). `state.draftAnswer` only
+  // becomes non-null once a prior iteration's `generate()` has already run -- i.e. on a
+  // verify-retry iteration -- at which point it genuinely is the same on-loop content
+  // `verifyOutput`'s instructions ask Jev to judge, so include it here for Jev to actually see.
+  if (state.draftAnswer !== null) {
+    decisionState.draftAnswer = state.draftAnswer;
+  }
+  return decisionState;
 }
 
 function collectDecisionActions(

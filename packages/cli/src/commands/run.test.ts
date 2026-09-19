@@ -96,4 +96,37 @@ describe("registerRunCommand", () => {
     await expect(program.parseAsync(["run"], { from: "user" })).rejects.toThrow();
     expect(runAgentRuntimeOptimizerMock).not.toHaveBeenCalled();
   });
+
+  // REGRESSION GUARD (final-review Finding #5): --max-iterations used to be parsed with a bare
+  // `Number(value)`, so a non-numeric value silently became `NaN` and would have been passed
+  // straight through to runAgentRuntimeOptimizer instead of being rejected up front.
+  it("rejects a non-numeric --max-iterations value with a clear error instead of silently passing NaN through", async () => {
+    const program = buildProgram();
+    vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+
+    await expect(
+      program.parseAsync(
+        ["run", "--example", "agent-runtime-optimizer", "--max-iterations", "not-a-number"],
+        { from: "user" }
+      )
+    ).rejects.toThrow();
+
+    expect(runAgentRuntimeOptimizerMock).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
+
+  it("rejects a non-finite --max-iterations value (Infinity) too, not just non-numeric text", async () => {
+    const program = buildProgram();
+    vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+
+    await expect(
+      program.parseAsync(
+        ["run", "--example", "agent-runtime-optimizer", "--max-iterations", "Infinity"],
+        { from: "user" }
+      )
+    ).rejects.toThrow();
+
+    expect(runAgentRuntimeOptimizerMock).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
 });

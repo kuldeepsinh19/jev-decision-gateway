@@ -1,6 +1,7 @@
-import { createRequire } from "node:module";
 import { writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
+
+import { SDK_VERSION } from "@jev-decision-gateway/core";
 
 import type { ComparisonResult } from "./metrics.js";
 
@@ -96,16 +97,6 @@ export function printReport(comparison: ComparisonResult): void {
   );
 }
 
-function resolveSdkVersion(): string {
-  try {
-    const require = createRequire(import.meta.url);
-    const pkg = require("@typesafe-ai/sdk/package.json") as { version?: string };
-    return pkg.version ?? "unknown";
-  } catch {
-    return "unknown";
-  }
-}
-
 function tryGetGitCommit(): string | undefined {
   try {
     return execSync("git rev-parse HEAD", { stdio: ["ignore", "pipe", "ignore"] })
@@ -132,7 +123,7 @@ export interface ReportJson {
 export function writeReportJson(comparison: ComparisonResult, outPath: string): void {
   const header: ReportJsonHeader = {
     generatedAt: new Date().toISOString(),
-    sdkVersion: resolveSdkVersion(),
+    sdkVersion: SDK_VERSION,
     nodeVersion: process.version,
   };
   const gitCommit = tryGetGitCommit();

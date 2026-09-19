@@ -1,6 +1,8 @@
 import type { Command } from "commander";
 import { runAiAgentBenchmark } from "@jev-decision-gateway/benchmark-ai-agent";
 
+import { parseNumberOption } from "../parseNumberOption.js";
+
 interface BenchmarkCommandOptions {
   tasks?: number;
   out?: string;
@@ -18,7 +20,11 @@ export function registerBenchmarkCommand(program: Command): void {
   program
     .command("benchmark")
     .description("Run the jev-decision-gateway AI-agent benchmark")
-    .option("--tasks <n>", "limit the number of benchmark tasks to run", (value) => Number(value))
+    .option(
+      "--tasks <n>",
+      "limit the number of benchmark tasks to run",
+      parseNumberOption("--tasks")
+    )
     .option("--out <path>", "path to write the JSON report to")
     .option("--provider <provider>", 'LLM provider to use (only "mock" is supported)', "mock")
     .action(async (options: BenchmarkCommandOptions) => {
