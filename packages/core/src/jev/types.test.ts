@@ -15,15 +15,9 @@ describe("isChoiceAnswer", () => {
   });
 
   it.each([
-    [
-      "wrong type",
-      { type: "score", choice: "a", confidence: 0.5, probabilities: {} },
-    ],
+    ["wrong type", { type: "score", choice: "a", confidence: 0.5, probabilities: {} }],
     ["missing choice", { type: "choice", confidence: 0.5, probabilities: {} }],
-    [
-      "empty choice string",
-      { type: "choice", choice: "", confidence: 0.5, probabilities: {} },
-    ],
+    ["empty choice string", { type: "choice", choice: "", confidence: 0.5, probabilities: {} }],
     [
       "non-numeric confidence",
       { type: "choice", choice: "a", confidence: "high", probabilities: {} },
@@ -97,10 +91,7 @@ describe("isScoreAnswer", () => {
         probabilities: {},
       },
     ],
-    [
-      "missing score",
-      { type: "score", confidence: 0.5, legend: [], probabilities: {} },
-    ],
+    ["missing score", { type: "score", confidence: 0.5, legend: [], probabilities: {} }],
     [
       "non-numeric score",
       {

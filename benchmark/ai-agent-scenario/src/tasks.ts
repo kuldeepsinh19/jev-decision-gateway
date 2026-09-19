@@ -22,7 +22,7 @@ export const BENCHMARK_TASKS: BenchmarkTask[] = [
   {
     id: "trivial-already-resolved",
     prompt:
-      "The user writes: \"Never mind — I already fixed it myself, thanks.\" Close out the request without doing any further work.",
+      'The user writes: "Never mind — I already fixed it myself, thanks." Close out the request without doing any further work.',
     complexity: "trivial",
     idealToolSequence: [],
     expectedIterations: 1,
@@ -59,7 +59,8 @@ export const BENCHMARK_TASKS: BenchmarkTask[] = [
   },
   {
     id: "moderate-log-inspection",
-    prompt: "Inspect recent logs for an error and report a one-line summary of the most severe issue you find.",
+    prompt:
+      "Inspect recent logs for an error and report a one-line summary of the most severe issue you find.",
     complexity: "moderate",
     idealToolSequence: ["search"],
     expectedIterations: 2,
@@ -73,7 +74,8 @@ export const BENCHMARK_TASKS: BenchmarkTask[] = [
   },
   {
     id: "moderate-clarify-ambiguous",
-    prompt: "The user asks: \"Can you fix the thing that's broken?\" Ask a targeted clarifying question before doing anything else.",
+    prompt:
+      'The user asks: "Can you fix the thing that\'s broken?" Ask a targeted clarifying question before doing anything else.',
     complexity: "moderate",
     idealToolSequence: [],
     expectedIterations: 1,
@@ -107,7 +109,7 @@ export const BENCHMARK_TASKS: BenchmarkTask[] = [
   {
     id: "complex-ambiguous-then-research",
     prompt:
-      "The user says: \"Something's wrong with the numbers.\" Ask what specifically looks wrong, then, assuming they mean the retry count, look it up and verify it against documentation.",
+      'The user says: "Something\'s wrong with the numbers." Ask what specifically looks wrong, then, assuming they mean the retry count, look it up and verify it against documentation.',
     complexity: "complex",
     idealToolSequence: ["search", "calculator"],
     expectedIterations: 4,

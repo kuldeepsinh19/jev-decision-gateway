@@ -9,10 +9,7 @@
  * Secrets that are `undefined` or empty/whitespace-only are ignored (never matched, since an
  * empty-string replace would be a no-op anyway and could otherwise mask bugs silently).
  */
-export function redactSecret(
-  input: string,
-  secrets: Array<string | undefined>
-): string {
+export function redactSecret(input: string, secrets: Array<string | undefined>): string {
   let result = input;
   for (const secret of secrets) {
     if (!secret) continue;

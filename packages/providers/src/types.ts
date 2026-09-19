@@ -43,7 +43,9 @@ export interface LLMProvider {
  */
 export class MissingApiKeyError extends Error {
   constructor(providerName: string) {
-    super(`${providerName}: no API key configured (set an explicit apiKey or the provider's API key environment variable)`);
+    super(
+      `${providerName}: no API key configured (set an explicit apiKey or the provider's API key environment variable)`
+    );
     this.name = "MissingApiKeyError";
     // Restore the prototype chain — necessary when targeting ES2022 classes extending built-ins
     // through some transpilation/bundling paths so `instanceof MissingApiKeyError` keeps working.

@@ -48,17 +48,11 @@ const DEFAULT_LOG_LEVEL = "warn" as const;
  * resolvable. This is the `MISSING_KEY` fail-open path: callers get `null` and are expected to
  * treat it as "Jev unavailable", never crash.
  */
-export function createJevClient(
-  config: JevClientConfig = {}
-): JevClientHandle | null {
+export function createJevClient(config: JevClientConfig = {}): JevClientHandle | null {
   // CONFIRMED (README): "Set TYPESAFE_API_KEY in your environment" / the SDK's own doc says
   // "Empty or whitespace-only environment values are ignored." We apply the same trimming rule
   // to an explicitly-passed `config.apiKey` too, for the same reason: a blank string is not a key.
-  const resolvedKey = (
-    config.apiKey ??
-    process.env.TYPESAFE_API_KEY ??
-    ""
-  ).trim();
+  const resolvedKey = (config.apiKey ?? process.env.TYPESAFE_API_KEY ?? "").trim();
   if (!resolvedKey) return null;
 
   const timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;

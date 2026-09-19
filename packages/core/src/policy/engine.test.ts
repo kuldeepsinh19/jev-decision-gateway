@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type {
-  ChoiceDecisionDef,
-  NoulDecisionDef,
-  ScoreDecisionDef,
-} from "./rules.js";
+import type { ChoiceDecisionDef, NoulDecisionDef, ScoreDecisionDef } from "./rules.js";
 import { applyPolicy } from "./engine.js";
 
 const choiceDef: ChoiceDecisionDef = {
@@ -181,11 +177,7 @@ describe("applyPolicy", () => {
     ])(
       "computes confidence = |noul - 0.5| * 2 (own framework convention, not a Jev field) for noul=%f",
       (noulValue, expectedConfidence) => {
-        const outcome = applyPolicy(
-          noulMathDef,
-          { type: "noul", noul: noulValue },
-          3
-        );
+        const outcome = applyPolicy(noulMathDef, { type: "noul", noul: noulValue }, 3);
         expect(outcome.confidence).toBeCloseTo(expectedConfidence, 10);
       }
     );

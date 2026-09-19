@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+*.tsbuildinfo
+.superpowers
+.claude
+package-lock.json

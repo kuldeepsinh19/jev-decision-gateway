@@ -1,8 +1,4 @@
-import type {
-  ChoiceDecisionDef,
-  NoulDecisionDef,
-  ScoreDecisionDef,
-} from "./rules.js";
+import type { ChoiceDecisionDef, NoulDecisionDef, ScoreDecisionDef } from "./rules.js";
 
 /**
  * Small, documented set of sane defaults for `DecisionDef.policy`, for developers who don't want
@@ -20,9 +16,7 @@ export const DEFAULT_MIN_CONFIDENCE = 0.7;
 export function withDefaultChoicePolicy<
   TOptions extends Record<string, string> = Record<string, string>,
 >(
-  partial: Partial<
-    Pick<ChoiceDecisionDef<TOptions>["policy"], "minConfidence">
-  > &
+  partial: Partial<Pick<ChoiceDecisionDef<TOptions>["policy"], "minConfidence">> &
     Pick<ChoiceDecisionDef<TOptions>["policy"], "fallbackAction">
 ): ChoiceDecisionDef<TOptions>["policy"] {
   return { minConfidence: DEFAULT_MIN_CONFIDENCE, ...partial };
@@ -39,10 +33,7 @@ export function withDefaultScorePolicy(
 /** Fills in `minConfidence` with `DEFAULT_MIN_CONFIDENCE` unless the caller already specified one. */
 export function withDefaultNoulPolicy(
   partial: Partial<Pick<NoulDecisionDef["policy"], "minConfidence">> &
-    Pick<
-      NoulDecisionDef["policy"],
-      "trueAction" | "falseAction" | "fallbackAction"
-    >
+    Pick<NoulDecisionDef["policy"], "trueAction" | "falseAction" | "fallbackAction">
 ): NoulDecisionDef["policy"] {
   return { minConfidence: DEFAULT_MIN_CONFIDENCE, ...partial };
 }

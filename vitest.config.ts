@@ -11,11 +11,7 @@ const repoRoot = fileURLToPath(new URL(".", import.meta.url));
 export default defineConfig({
   root: repoRoot,
   test: {
-    include: [
-      "packages/**/*.test.ts",
-      "examples/**/*.test.ts",
-      "benchmark/**/*.test.ts"
-    ],
-    environment: "node"
-  }
+    include: ["packages/**/*.test.ts", "examples/**/*.test.ts", "benchmark/**/*.test.ts"],
+    environment: "node",
+  },
 });

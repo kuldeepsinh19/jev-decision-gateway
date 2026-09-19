@@ -42,10 +42,7 @@ function criteriaSummary(def: DecisionDef): string {
  * the question's criteria (`criteriaSummary`) rather than dumping full option/level/description
  * text or any surrounding state into the trace.
  */
-export function createTrace(
-  def: DecisionDef,
-  outcome: DecisionOutcome
-): DecisionTrace {
+export function createTrace(def: DecisionDef, outcome: DecisionOutcome): DecisionTrace {
   return {
     traceId: randomUUID(),
     decisionId: def.id,
@@ -77,9 +74,7 @@ const SECRET_KEY_PATTERN = /key|token|secret|password|credential|pwd/i;
  * logged or embedded in a trace — per Global Constraint 4, no secrets in logs/traces/error messages,
  * ever. Does not mutate the input.
  */
-export function redactState(
-  state: Record<string, unknown>
-): Record<string, unknown> {
+export function redactState(state: Record<string, unknown>): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(state)) {
     result[key] = SECRET_KEY_PATTERN.test(key) ? "[REDACTED]" : value;

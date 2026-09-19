@@ -45,9 +45,7 @@ function isUnitInterval(value: unknown): value is number {
 }
 
 function isProbabilityMap(value: unknown): value is Record<string, number> {
-  return (
-    isRecord(value) && Object.values(value).every((v) => isFiniteNumber(v))
-  );
+  return isRecord(value) && Object.values(value).every((v) => isFiniteNumber(v));
 }
 
 /** Defensive check: required fields present, correctly typed, and in sensible ranges. */

@@ -65,14 +65,10 @@ export function applyPolicy<TAction extends string = string>(
       if (confidence < def.policy.minConfidence) {
         return fallbackOutcome<TAction>(def, latencyMs, "LOW_CONFIDENCE");
       }
-      const sortedDescending = [...def.policy.thresholds].sort(
-        (a, b) => b.atOrAbove - a.atOrAbove
-      );
+      const sortedDescending = [...def.policy.thresholds].sort((a, b) => b.atOrAbove - a.atOrAbove);
       const matched = sortedDescending.find((t) => answer.score >= t.atOrAbove);
       const action = matched ? matched.action : def.policy.fallbackAction;
-      const matchedRule = matched
-        ? `score>=${matched.atOrAbove}`
-        : "score-no-threshold-matched";
+      const matchedRule = matched ? `score>=${matched.atOrAbove}` : "score-no-threshold-matched";
       return {
         id: def.id,
         raw: answer,
@@ -98,9 +94,7 @@ export function applyPolicy<TAction extends string = string>(
         id: def.id,
         raw: answer,
         confidence,
-        action: (isTrue
-          ? def.policy.trueAction
-          : def.policy.falseAction) as TAction,
+        action: (isTrue ? def.policy.trueAction : def.policy.falseAction) as TAction,
         usedFallback: false,
         matchedRule: isTrue ? "noul-true" : "noul-false",
         latencyMs,

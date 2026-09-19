@@ -53,7 +53,9 @@ export async function runAgentRuntimeOptimizer(
   const task = options.task ?? DEFAULT_TASK;
 
   const gateway = new DecisionGateway();
-  const jevKeyDetected = Boolean(process.env.TYPESAFE_API_KEY && process.env.TYPESAFE_API_KEY.length > 0);
+  const jevKeyDetected = Boolean(
+    process.env.TYPESAFE_API_KEY && process.env.TYPESAFE_API_KEY.length > 0
+  );
 
   const providers: TieredProviders = {
     "mock-fast": new MockProvider("mock-fast"),

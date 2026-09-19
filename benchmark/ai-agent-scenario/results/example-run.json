@@ -366,11 +366,7 @@
           "realJevAvgConfidence": 0.7881818181818182,
           "realJevDecisionCount": 14,
           "fallbackCount": 3,
-          "fallbackReasons": [
-            "LOW_CONFIDENCE",
-            "LOW_CONFIDENCE",
-            "LOW_CONFIDENCE"
-          ],
+          "fallbackReasons": ["LOW_CONFIDENCE", "LOW_CONFIDENCE", "LOW_CONFIDENCE"],
           "completed": true
         }
       },
@@ -483,10 +479,7 @@
           "realJevAvgConfidence": 0.8066666666666668,
           "realJevDecisionCount": 26,
           "fallbackCount": 2,
-          "fallbackReasons": [
-            "LOW_CONFIDENCE",
-            "LOW_CONFIDENCE"
-          ],
+          "fallbackReasons": ["LOW_CONFIDENCE", "LOW_CONFIDENCE"],
           "completed": true
         }
       },

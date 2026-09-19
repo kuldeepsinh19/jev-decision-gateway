@@ -20,11 +20,7 @@ vi.mock("@typesafe-ai/sdk", () => ({
 
 import { choice, noul, score } from "@typesafe-ai/sdk";
 
-import type {
-  ChoiceDecisionDef,
-  NoulDecisionDef,
-  ScoreDecisionDef,
-} from "./builders.js";
+import type { ChoiceDecisionDef, NoulDecisionDef, ScoreDecisionDef } from "./builders.js";
 import { toSdkQuestion } from "./builders.js";
 
 describe("toSdkQuestion", () => {
@@ -62,11 +58,7 @@ describe("toSdkQuestion", () => {
     toSdkQuestion(def);
 
     expect(score).toHaveBeenCalledTimes(1);
-    expect(score).toHaveBeenCalledWith("rate the output", [
-      "poor",
-      "acceptable",
-      "excellent",
-    ]);
+    expect(score).toHaveBeenCalledWith("rate the output", ["poor", "acceptable", "excellent"]);
   });
 
   it("maps a NoulDecisionDef to noul(instructions, { true, false })", () => {

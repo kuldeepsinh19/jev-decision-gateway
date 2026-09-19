@@ -1,7 +1,12 @@
 import { OpenAI } from "openai";
 
 import { estimateRealCostUsd } from "../pricing.js";
-import { MissingApiKeyError, type LLMProvider, type LLMRequest, type LLMResponse } from "../types.js";
+import {
+  MissingApiKeyError,
+  type LLMProvider,
+  type LLMRequest,
+  type LLMResponse,
+} from "../types.js";
 
 export interface OpenAIProviderConfig {
   /** default: process.env.OPENAI_API_KEY */

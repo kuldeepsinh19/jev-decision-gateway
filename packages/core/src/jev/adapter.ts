@@ -135,22 +135,11 @@ function describeError(err: unknown): string {
 }
 
 /** Logs a caught failure at `handle.logLevel`, always redacting the configured API key first. */
-function logCaughtError(
-  handle: JevClientHandle,
-  context: string,
-  err: unknown
-): void {
+function logCaughtError(handle: JevClientHandle, context: string, err: unknown): void {
   if (handle.logLevel === "silent") return;
-  const message = redactSecret(
-    `[jev/adapter] ${context}: ${describeError(err)}`,
-    [handle.apiKey]
-  );
+  const message = redactSecret(`[jev/adapter] ${context}: ${describeError(err)}`, [handle.apiKey]);
   console.warn(message);
-  if (
-    handle.logLevel === "debug" &&
-    err instanceof Error &&
-    typeof err.stack === "string"
-  ) {
+  if (handle.logLevel === "debug" && err instanceof Error && typeof err.stack === "string") {
     console.debug(
       redactSecret(`[jev/adapter] ${context} (stack)`, [handle.apiKey]),
       redactSecret(err.stack, [handle.apiKey])

@@ -69,14 +69,9 @@ export function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4);
 }
 
-function costFromEntry(
-  entry: PricingEntry,
-  inputTokens: number,
-  outputTokens: number
-): number {
+function costFromEntry(entry: PricingEntry, inputTokens: number, outputTokens: number): number {
   return (
-    (inputTokens / 1_000_000) * entry.inputPer1M +
-    (outputTokens / 1_000_000) * entry.outputPer1M
+    (inputTokens / 1_000_000) * entry.inputPer1M + (outputTokens / 1_000_000) * entry.outputPer1M
   );
 }
 

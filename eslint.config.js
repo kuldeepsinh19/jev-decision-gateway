@@ -7,16 +7,16 @@ export default [
     languageOptions: {
       parser: parser,
       ecmaVersion: 2022,
-      sourceType: "module"
+      sourceType: "module",
     },
     plugins: {
-      "@typescript-eslint": typescript
+      "@typescript-eslint": typescript,
     },
     rules: {
-      ...typescript.configs.recommended.rules
-    }
+      ...typescript.configs.recommended.rules,
+    },
   },
   {
-    ignores: ["**/dist/**", "**/node_modules/**"]
-  }
+    ignores: ["**/dist/**", "**/node_modules/**"],
+  },
 ];

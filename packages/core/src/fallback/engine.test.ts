@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type {
-  ChoiceDecisionDef,
-  NoulDecisionDef,
-  ScoreDecisionDef,
-} from "../policy/rules.js";
+import type { ChoiceDecisionDef, NoulDecisionDef, ScoreDecisionDef } from "../policy/rules.js";
 import { fallbackOutcome } from "./engine.js";
 
 const choiceDef: ChoiceDecisionDef = {
@@ -77,12 +73,8 @@ describe("fallbackOutcome", () => {
   });
 
   it("passes through whatever FallbackReason the caller supplies", () => {
-    expect(fallbackOutcome(choiceDef, 10, "MISSING_KEY").fallbackReason).toBe(
-      "MISSING_KEY"
-    );
-    expect(fallbackOutcome(choiceDef, 10, "ERROR").fallbackReason).toBe(
-      "ERROR"
-    );
+    expect(fallbackOutcome(choiceDef, 10, "MISSING_KEY").fallbackReason).toBe("MISSING_KEY");
+    expect(fallbackOutcome(choiceDef, 10, "ERROR").fallbackReason).toBe("ERROR");
   });
 
   it("never sets matchedRule (a fallback is never resolved via a policy rule)", () => {

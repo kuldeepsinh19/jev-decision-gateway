@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { DecisionGateway } from "../../src/index.js";
-import type {
-  ChoiceDecisionDef,
-  NoulDecisionDef,
-  ScoreDecisionDef,
-} from "../../src/index.js";
+import type { ChoiceDecisionDef, NoulDecisionDef, ScoreDecisionDef } from "../../src/index.js";
 
 /**
  * Real, gated live test: talks to the actual Jev API (no mocking anywhere in this file). Skips

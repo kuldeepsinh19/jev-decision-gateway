@@ -53,11 +53,7 @@ export function toSdkQuestion(def: DecisionDef): unknown {
       // (confirmed JSDoc: "@throws {TypeSafeError} ... score criteria are not a list of at least
       // two entries") and `askJev()` catches that like any other failure.
       const instructions: EntryType = def.instructions ?? null;
-      const criteria = def.levels as unknown as readonly [
-        EntryType,
-        EntryType,
-        ...EntryType[],
-      ];
+      const criteria = def.levels as unknown as readonly [EntryType, EntryType, ...EntryType[]];
       return score(instructions, criteria);
     }
     case "noul": {

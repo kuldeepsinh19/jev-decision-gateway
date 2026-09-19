@@ -9,7 +9,12 @@ import type { ScenarioRunResult } from "./scenarios/baseline.js";
 import { aggregate, compare } from "./metrics.js";
 import { printReport, writeReportJson } from "./report.js";
 
-function baselineFixture(taskId: string, llmCallCount: number, costUsd: number, ms: number): ScenarioRunResult {
+function baselineFixture(
+  taskId: string,
+  llmCallCount: number,
+  costUsd: number,
+  ms: number
+): ScenarioRunResult {
   return {
     taskId,
     controlDecisionCount: llmCallCount - 1,
@@ -112,7 +117,9 @@ describe("compare", () => {
   it("accepts an optional perTask array for report.ts's per-task table", () => {
     const baselineAgg = aggregate(baselineResults);
     const jevAgg = aggregate(jevGatedResults);
-    const perTask = [{ taskId: "task-a", baseline: baselineResults[0], jevGated: jevGatedResults[0] }];
+    const perTask = [
+      { taskId: "task-a", baseline: baselineResults[0], jevGated: jevGatedResults[0] },
+    ];
 
     const comparison = compare(baselineAgg, jevAgg, perTask);
 
@@ -162,13 +169,20 @@ describe("per-task 'LLM calls avoided' reconciliation (Task 11 review fix #1 reg
       jevFixtureWithLlmCallCount("task-b", 8, 3), // verify-retry loop, 3 real generation calls -> avoided 6, not 8
       jevFixtureWithLlmCallCount("task-c", 12, 2), // 2 real generation calls -> avoided 11, not 12
     ];
-    const perTask = baselines.map((b, i) => ({ taskId: b.taskId, baseline: b, jevGated: jevGated[i] }));
+    const perTask = baselines.map((b, i) => ({
+      taskId: b.taskId,
+      baseline: b,
+      jevGated: jevGated[i],
+    }));
 
     const baselineAgg = aggregate(baselines);
     const jevAgg = aggregate(jevGated);
     const comparison = compare(baselineAgg, jevAgg, perTask);
 
-    const perTaskSum = comparison.perTask.reduce((sum, row) => sum + row.jevGated.llmCallsAvoided, 0);
+    const perTaskSum = comparison.perTask.reduce(
+      (sum, row) => sum + row.jevGated.llmCallsAvoided,
+      0
+    );
 
     // Concrete numbers, not just self-consistency: (5-1) + (9-3) + (13-2) = 4 + 6 + 11 = 21.
     expect(perTaskSum).toBe(21);

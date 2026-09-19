@@ -14,11 +14,7 @@ vi.mock("./jev/adapter.js", () => ({
 }));
 
 import { DecisionGateway } from "./gateway.js";
-import type {
-  ChoiceDecisionDef,
-  NoulDecisionDef,
-  ScoreDecisionDef,
-} from "./types.js";
+import type { ChoiceDecisionDef, NoulDecisionDef, ScoreDecisionDef } from "./types.js";
 
 const choiceDef: ChoiceDecisionDef = {
   kind: "choice",
@@ -268,30 +264,21 @@ describe("DecisionGateway.chain", () => {
       });
 
     const gateway = new DecisionGateway({ apiKey: "test-key" });
-    const chained = await gateway.chain(
-      { text: "hello" },
-      async ({ evaluate }) => {
-        const step1 = await evaluate({ decisions: { continue: noulDef } });
-        const step2 = await evaluate({
-          state: { previousAction: step1.decisions.continue.action },
-          decisions: { route: choiceDef },
-        });
-        return step2.decisions.route.action;
-      }
-    );
+    const chained = await gateway.chain({ text: "hello" }, async ({ evaluate }) => {
+      const step1 = await evaluate({ decisions: { continue: noulDef } });
+      const step2 = await evaluate({
+        state: { previousAction: step1.decisions.continue.action },
+        decisions: { route: choiceDef },
+      });
+      return step2.decisions.route.action;
+    });
 
     expect(askJevMock).toHaveBeenCalledTimes(2);
 
-    const [, firstRequest] = askJevMock.mock.calls[0] as [
-      unknown,
-      { state: unknown },
-    ];
+    const [, firstRequest] = askJevMock.mock.calls[0] as [unknown, { state: unknown }];
     expect(firstRequest.state).toEqual({ text: "hello" });
 
-    const [, secondRequest] = askJevMock.mock.calls[1] as [
-      unknown,
-      { state: unknown },
-    ];
+    const [, secondRequest] = askJevMock.mock.calls[1] as [unknown, { state: unknown }];
     expect(secondRequest.state).toEqual({
       text: "hello",
       previousAction: "continue",

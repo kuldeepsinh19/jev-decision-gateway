@@ -121,7 +121,10 @@ describe("AnthropicProvider", () => {
     vi.stubEnv("ANTHROPIC_API_KEY", "test-key");
     createMock.mockResolvedValue({
       model: "claude-sonnet-4-5-20260101",
-      content: [{ type: "text", text: "The answer is " }, { type: "text", text: "4." }],
+      content: [
+        { type: "text", text: "The answer is " },
+        { type: "text", text: "4." },
+      ],
       usage: { input_tokens: 42, output_tokens: 7 },
     });
 

@@ -62,11 +62,15 @@ export function formatTranscript(input: FormatTranscriptInput): string {
       for (const action of log.decisionActions) {
         const confidenceStr = action.confidence === null ? "n/a" : action.confidence.toFixed(2);
         const fallbackSuffix = action.usedFallback ? ` [FALLBACK: ${action.fallbackReason}]` : "";
-        lines.push(`  ${pad(action.id)} -> ${pad(action.action, 12)} (confidence ${confidenceStr})${fallbackSuffix}`);
+        lines.push(
+          `  ${pad(action.id)} -> ${pad(action.action, 12)} (confidence ${confidenceStr})${fallbackSuffix}`
+        );
       }
     }
     if (log.toolCall) {
-      lines.push(`> tool:${log.toolCall.tool}("${log.toolCall.input}") -> "${log.toolCall.output}"`);
+      lines.push(
+        `> tool:${log.toolCall.tool}("${log.toolCall.input}") -> "${log.toolCall.output}"`
+      );
     }
     if (log.generation) {
       const forcedNote = log.generation.forced ? " [forced finalize]" : "";

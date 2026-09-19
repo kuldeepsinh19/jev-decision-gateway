@@ -57,11 +57,7 @@ export class DecisionGateway {
       const decisions: Record<string, DecisionOutcome> = {};
       for (const id of ids) {
         const def = args.decisions[id] as DecisionDef;
-        const outcome = fallbackOutcome(
-          def,
-          elapsedMs(startedAt),
-          "MISSING_KEY"
-        );
+        const outcome = fallbackOutcome(def, elapsedMs(startedAt), "MISSING_KEY");
         decisions[id] = outcome;
         this.emitTrace(collector, def, outcome);
       }
@@ -186,11 +182,7 @@ export class DecisionGateway {
     };
   }
 
-  private emitTrace(
-    collector: TraceCollector,
-    def: DecisionDef,
-    outcome: DecisionOutcome
-  ): void {
+  private emitTrace(collector: TraceCollector, def: DecisionDef, outcome: DecisionOutcome): void {
     const decisionTrace = createTrace(def, outcome);
     collector.add(decisionTrace);
     this.config.onTrace?.(decisionTrace);

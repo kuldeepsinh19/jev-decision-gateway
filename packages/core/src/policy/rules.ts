@@ -47,8 +47,7 @@ export interface NoulDecisionDef {
   };
 }
 
-export type DecisionDef =
-  ChoiceDecisionDef | ScoreDecisionDef | NoulDecisionDef;
+export type DecisionDef = ChoiceDecisionDef | ScoreDecisionDef | NoulDecisionDef;
 
 export interface DecisionSet {
   [id: string]: DecisionDef;

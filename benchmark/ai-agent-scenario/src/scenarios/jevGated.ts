@@ -32,9 +32,7 @@ export async function runJevGated(
     .map((t) => t.confidence)
     .filter((c): c is number => c !== null);
   const realJevAvgConfidence =
-    confidences.length > 0
-      ? confidences.reduce((sum, c) => sum + c, 0) / confidences.length
-      : null;
+    confidences.length > 0 ? confidences.reduce((sum, c) => sum + c, 0) / confidences.length : null;
 
   const fallbackReasons = loopResult.trace
     .filter((t) => t.usedFallback && t.fallbackReason !== undefined)

@@ -55,7 +55,8 @@ const TOOL_SUBSETS_BY_CATEGORY: Record<TaskCategory, ToolSubsetConfig> = {
   calculation: {
     options: {
       calculatorOnly: "Use only the calculator tool.",
-      calculatorAndSearch: "Use the calculator tool, consulting search for any reference values first.",
+      calculatorAndSearch:
+        "Use the calculator tool, consulting search for any reference values first.",
     },
     fallback: "calculatorOnly",
   },
@@ -107,7 +108,8 @@ export function buildMainCheckpointDecisions(state: AgentState): MainCheckpointD
         "Pick which simulated model tier should generate the final answer once the agent is ready to finish: a fast/cheap tier for simple tasks, a strong/expensive tier for anything that needs careful reasoning.",
       options: {
         "mock-fast": "Fast, cheap simulated tier -- good enough for simple/well-understood tasks.",
-        "mock-strong": "Slower, more expensive simulated tier -- for tasks needing careful reasoning.",
+        "mock-strong":
+          "Slower, more expensive simulated tier -- for tasks needing careful reasoning.",
       },
       // Falls back to the cheap tier: if Jev is unavailable we should not assume the expensive
       // tier is warranted.

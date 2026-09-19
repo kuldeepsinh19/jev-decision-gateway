@@ -138,7 +138,8 @@ export function compare(
       measurement: "simulated",
       llmCallsAvoidedTotal: baseline.simulated.callCount - jevGated.simulated.callCount,
       simulatedCostSavedUsd: baseline.simulated.totalCostUsd - jevGated.simulated.totalCostUsd,
-      simulatedLatencySavedMs: baseline.simulated.totalLatencyMs - jevGated.simulated.totalLatencyMs,
+      simulatedLatencySavedMs:
+        baseline.simulated.totalLatencyMs - jevGated.simulated.totalLatencyMs,
     },
     jevBillingCost: "n/a — no public pricing found as of 2026-09",
   };

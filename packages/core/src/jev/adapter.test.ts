@@ -151,23 +151,20 @@ describe("askJev", () => {
     expect(result?.answers).not.toHaveProperty("continue");
   });
 
-  it.each([401, 422, 429, 529])(
-    "returns null on an HTTP %i error",
-    async (status) => {
-      const err = Object.assign(new Error(`HTTP ${status}`), {
-        status,
-        name: "APIError",
-      });
-      systemOneMock.mockRejectedValue(err);
+  it.each([401, 422, 429, 529])("returns null on an HTTP %i error", async (status) => {
+    const err = Object.assign(new Error(`HTTP ${status}`), {
+      status,
+      name: "APIError",
+    });
+    systemOneMock.mockRejectedValue(err);
 
-      const result = await askJev(makeHandle(), {
-        state: {},
-        questions: { continue: noulDef },
-      });
+    const result = await askJev(makeHandle(), {
+      state: {},
+      questions: { continue: noulDef },
+    });
 
-      expect(result).toBeNull();
-    }
-  );
+    expect(result).toBeNull();
+  });
 
   it("returns null on a hard network error", async () => {
     systemOneMock.mockRejectedValue(new TypeError("fetch failed"));
@@ -227,10 +224,7 @@ describe("askJev", () => {
 
     // Worst case: the underlying error's own message happens to embed the key (e.g. an
     // upstream library echoing request details back in an error string).
-    const err = Object.assign(
-      new Error(`Unauthorized using key ${FAKE_API_KEY}`),
-      { status: 401 }
-    );
+    const err = Object.assign(new Error(`Unauthorized using key ${FAKE_API_KEY}`), { status: 401 });
     systemOneMock.mockRejectedValue(err);
 
     const handle = makeHandle({ logLevel: "debug" });
