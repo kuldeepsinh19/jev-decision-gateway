@@ -301,6 +301,9 @@ npm run lint         # ESLint
 npm run format       # Prettier check (does not write)
 ```
 
+The live integration test (`packages/core/test/live/jev.live.test.ts`) is skipped unless
+`TYPESAFE_API_KEY` is set, so `npm test` never makes a network call by default.
+
 ## Roadmap
 
 See **[`ROADMAP.md`](ROADMAP.md)** for what's explicitly deferred beyond this MVP pass — more
