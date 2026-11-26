@@ -62,6 +62,8 @@ error handling, and an honest "when Jev is and isn't the right tool" section.
 
 ## Quickstart
 
+Requires Node.js 20 or newer (`.nvmrc` pins 20).
+
 ```sh
 npm install
 npm run build
