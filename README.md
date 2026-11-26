@@ -292,6 +292,15 @@ decides generation is actually warranted. The hard iteration/retry caps in the f
 deliberately enforced in plain code, never by a Jev answer, precisely because Jev is a decision
 input, not a substitute for your own safety bounds.
 
+## Development
+
+```sh
+npm test             # Vitest across packages, examples and the benchmark
+npm run typecheck    # tsc -b --noEmit
+npm run lint         # ESLint
+npm run format       # Prettier check (does not write)
+```
+
 ## Roadmap
 
 See **[`ROADMAP.md`](ROADMAP.md)** for what's explicitly deferred beyond this MVP pass — more
